@@ -51,14 +51,20 @@ public class Gun : MonoBehaviour
             _timer = 0;
             FireGun();
         }
+        else
+        {
+            _animator.SetBool("shooting", false);
+        }
     }
 
     private void FireGun()
     {
-        //Debug.DrawRay(_firePoint.position, _firePoint.forward * 100, Color.red, 2f, false);
-
-        _muzzleParticle.Play();
+        Debug.DrawRay(_firePoint.position, _firePoint.forward * 100, Color.red, 200f, false);
+        if (!_firePoint) return;
+        if(_muzzleParticle)
+            _muzzleParticle.Play();
         _gunFireSource.Play();
+        _animator.SetBool("shooting",true);
 
         Ray ray = new Ray(_firePoint.position, _firePoint.forward);
         RaycastHit hitInfo;
@@ -71,7 +77,9 @@ public class Gun : MonoBehaviour
 
     private void FireGun_firstPerson()
     {
-        _muzzleParticle.Play();
+        if (!_firePoint) return;
+        if (_muzzleParticle)
+            _muzzleParticle.Play();
         _gunFireSource.Play();
         
         Ray ray = Camera.main.ViewportPointToRay(Vector3.one * 0.5f);

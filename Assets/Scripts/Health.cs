@@ -17,8 +17,12 @@ public class Health : MonoBehaviour
     {
         _currentHealth -= dmgAmount;
 
-        if(_damageParticle)
+        if (_damageParticle)
+        {
             _damageParticle.Play();
+            Observable.Timer(TimeSpan.FromSeconds(_damageParticle.main.duration)).Subscribe(_ => _damageParticle.Stop())
+                .AddTo(this);
+        }
 
         if (_currentHealth <= 0)
             Die();

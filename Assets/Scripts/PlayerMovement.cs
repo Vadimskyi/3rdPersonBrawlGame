@@ -6,12 +6,12 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private CharacterController _characterController;
     [SerializeField]
     private float _moveSpeed = 250;
     [SerializeField]
     private float _turnSpeed = 5;
 
+    private CharacterController _characterController;
     private Animator _animator;
 
     private void Start()
@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        //if (!_characterController.isGrounded) return;
 #if UNITY_EDITOR
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
@@ -35,8 +36,7 @@ public class PlayerMovement : MonoBehaviour
 
         var movement = new Vector3(horizontal, 0, vertical);
         _characterController.SimpleMove(movement * Time.deltaTime * _moveSpeed);
-        _animator.SetFloat("speed", movement.magnitude);
-
+        _animator.SetBool("moving", movement.magnitude > 0);
         if (movement.magnitude > 0)
         {
             Quaternion newDirection = Quaternion.LookRotation(movement);
