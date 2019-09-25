@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
@@ -7,6 +8,8 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public event Action<Transform> OnMove = delegate{  };
+
     [SerializeField]
     private float _moveSpeed = 250;
     [SerializeField]
@@ -23,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         _rigidbody = GetComponentInChildren<Rigidbody>();
         _animator = GetComponentInChildren<Animator>();
+        Debug.Log(transform.position);
     }
 
     /// <summary>
@@ -48,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
             Quaternion newDirection = Quaternion.LookRotation(_movementForce);
             transform.rotation = Quaternion.Slerp(transform.rotation, newDirection, Time.deltaTime * _turnSpeed);
         }
+        OnMove?.Invoke(transform);
     }
 
     private void ReadInput()

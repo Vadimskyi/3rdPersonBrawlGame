@@ -6,6 +6,10 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    public event Action<int> OnDamageTaken = delegate {  };
+    public int MaxHealth => _startingHealth;
+    public int CurrentHealth => _currentHealth;
+
     [SerializeField]
     private int _startingHealth = 10;
     [SerializeField]
@@ -18,6 +22,7 @@ public class Health : MonoBehaviour
     public void TakeDamage(int dmgAmount)
     {
         _currentHealth -= dmgAmount;
+        OnDamageTaken?.Invoke(dmgAmount);
 
         if (_damageParticle)
         {
