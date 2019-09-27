@@ -10,8 +10,7 @@ namespace Vadimskyi.Game
     [Serializable]
     public abstract class CharacterModelBase
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public int UserId { get; set; }
         public float MaxHealth { get; set; }
         public Vector3 Position { get; set; }
 
@@ -21,18 +20,14 @@ namespace Vadimskyi.Game
         public ReactiveProperty<float> CurrentHealth { get; set; }
 
         protected CharacterModelBase(
-            int id,
             float maxHealth,
             Vector3 position,
-            string name = "default", 
             IWeapon weapon = null)
         {
-            Id = id;
-            Name = name;
             Weapon = weapon;
             Position = position;
             MaxHealth = maxHealth;
-            CurrentHealth.Value = MaxHealth;
+            CurrentHealth = new ReactiveProperty<float>(MaxHealth);
         }
     }
 }

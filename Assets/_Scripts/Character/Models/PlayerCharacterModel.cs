@@ -6,7 +6,7 @@ namespace Vadimskyi.Game
 {
     public class PlayerCharacterModel : CharacterModelBase
     {
-        public PlayerCharacterModel(int id, float maxHealth, Vector3 position, string name = "default", IWeapon weapon = null) : base(id, maxHealth, position, name, weapon)
+        public PlayerCharacterModel(float maxHealth, Vector3 position, IWeapon weapon = null) : base(maxHealth, position, weapon)
         {
         }
     }
