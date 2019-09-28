@@ -8,11 +8,11 @@ using Vadimskyi.Game;
 
 namespace Vadimskyi.Game
 {
-    public class DefaultCombatRouter
+    public class DefaultGameRouter
     {
         private SocketManager _manager;
 
-        public DefaultCombatRouter(SocketManager manager)
+        public DefaultGameRouter(SocketManager manager)
         {
             _manager = manager;
 
@@ -23,6 +23,8 @@ namespace Vadimskyi.Game
 
             _manager.Socket.On("new_user_joined", NewUserJoined);
             _manager.Socket.On("user_data", OnGetUserData);
+            _manager.Socket.On("combat_room_data", OnGetCombatRoomData);
+
             _manager.Socket.On("user left", OnUserLeft);
             _manager.Socket.On("spawn character", OnSpawnCharacter);
             _manager.Socket.On("move character", OnCharacterMoved);
@@ -38,7 +40,15 @@ namespace Vadimskyi.Game
 
         private void OnGetUserData(Socket socket, Packet packet, params object[] args)
         {
-            NetworkEvents.UserDataReceived(JsonConvert.DeserializeObject<User>(args[0].ToString()));
+            Debug.Log("OnGetUserData");
+            UserData.Instance.Initialize(JsonConvert.DeserializeObject<User>(args[0].ToString())); 
+        }
+
+        private void OnGetCombatRoomData(Socket socket, Packet packet, params object[] args)
+        {
+            Debug.Log("OnGetCombatRoomData");
+            CombatRoomData.Instance.Initialize(JsonConvert.DeserializeObject<List<User>>(args[0].ToString()));
+            //NetworkEvents.CombatRoomDataReceived();
         }
 
         private void NewUserJoined(Socket socket, Packet packet, params object[] args)

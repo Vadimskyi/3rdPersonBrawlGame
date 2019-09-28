@@ -10,9 +10,9 @@ namespace Vadimskyi.Game
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public CharacterModelBase Character;
+        public PlayerCharacterModel Character;
 
-        public User(int id, string name, CharacterModelBase character)
+        public User(int id, string name, PlayerCharacterModel character)
         {
             Id = id;
             Name = name;

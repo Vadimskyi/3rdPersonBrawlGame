@@ -9,6 +9,8 @@ namespace Vadimskyi.Game
     {
         public static Action<string> onJoinGame;
         public static Action<User> onUserDataReceived;
+        public static Action<User[]> onCombatRoomDataReceived;
+
         public static Action<string> onCharacterMoved;
         public static Action<string> onUserLeftChat;
         public static Action<string> onCharacterHit;
@@ -22,6 +24,11 @@ namespace Vadimskyi.Game
         internal static void UserDataReceived(User user)
         {
             onUserDataReceived?.Invoke(user);
+        }
+
+        public static void CombatRoomDataReceived(User[] users)
+        {
+            onCombatRoomDataReceived?.Invoke(users);
         }
     }
 }

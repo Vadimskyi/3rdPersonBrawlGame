@@ -20,6 +20,7 @@ public class UiCanvasController : MonoBehaviour
         _playerRespawn.OnClickAsObservable().Subscribe(_ => { PlayerController.Instance.RespawnPlayer(); }).AddTo(this);
         PlayerController.Instance.CurrentPlayer.View.Movement.OnMove += OnPlayerMove;
         PlayerController.Instance.CurrentPlayer.View.Health.OnDamageTaken += HealthOnDamageTaken;
+        _healthBar.Name.text = UserData.Instance.User.Name;
     }
 
     private void HealthOnDamageTaken(int dmg)
