@@ -25,19 +25,19 @@ namespace Vadimskyi.Game
             SocketOptions options = new SocketOptions();
             options.AutoConnect = false;
             options.Timeout = new TimeSpan(0, 0, 5, 0);
-#if UNITY_EDITOR
-            _manager = new SocketManager(new Uri("http://localhost:1111/socket.io/"), options);
-#else
+//#if UNITY_EDITOR
+//            _manager = new SocketManager(new Uri("http://localhost:1111/socket.io/"), options);
+//#else
             _manager = new SocketManager(new Uri("http://95.179.129.130:1111/socket.io/"), options);
-#endif
+//#endif
             _manager.Encoder = new CustomJsonDecoder();
-            _router = new DefaultGameRouter(_manager);
             _manager.Open();
+            _router = new DefaultGameRouter(_manager);
 
-            _manager.Socket.On("connected", (socket, packet, args) =>
+            /*_manager.Socket.On("connected", (socket, packet, args) =>
             {
                 _gameStateController.SetState(GameStateType.Networking);
-            });
+            });*/
         }
 
         private void OnStateChanged(IState currentState)

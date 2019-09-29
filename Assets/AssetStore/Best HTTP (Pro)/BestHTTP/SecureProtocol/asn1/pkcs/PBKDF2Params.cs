@@ -128,9 +128,13 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Pkcs
 
         public override Asn1Object ToAsn1Object()
         {
-            Asn1EncodableVector v = new Asn1EncodableVector(octStr, iterationCount);
-            v.AddOptional(keyLength);
+            Asn1EncodableVector v = new Asn1EncodableVector(
+                octStr, iterationCount);
 
+            if (keyLength != null)
+            {
+                v.Add(keyLength);
+            }
             if (!IsDefaultPrf)
             {
                 v.Add(prf);

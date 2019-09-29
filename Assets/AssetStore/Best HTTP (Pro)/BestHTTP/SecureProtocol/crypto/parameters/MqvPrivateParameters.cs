@@ -2,9 +2,6 @@
 #pragma warning disable
 using System;
 
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC;
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier;
-
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
 {
 	public class MqvPrivateParameters
@@ -37,9 +34,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
 
             if (ephemeralPublicKey == null)
             {
-                ECPoint q = new FixedPointCombMultiplier().Multiply(parameters.G, ephemeralPrivateKey.D);
-
-                ephemeralPublicKey = new ECPublicKeyParameters(q, parameters);
+                ephemeralPublicKey = new ECPublicKeyParameters(
+                    parameters.G.Multiply(ephemeralPrivateKey.D),
+                    parameters);
             }
             else if (!parameters.Equals(ephemeralPublicKey.Parameters))
             {

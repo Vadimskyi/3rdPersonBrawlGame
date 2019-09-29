@@ -5,14 +5,12 @@ using UnityEngine;
 public class SpawnProjectiles : MonoBehaviour
 {
     [SerializeField]
-    private Transform _spawnPoint;
-    [SerializeField]
     private GameObject _projectile;
 
-    public GameObject SpawnProjectile()
+    public GameObject SpawnProjectile(Transform spawnPoint)
     {
-        var projectile = Instantiate(_projectile, _spawnPoint.position, Quaternion.identity);
-        projectile.transform.rotation = Quaternion.LookRotation(_spawnPoint.forward);
+        var projectile = Instantiate(_projectile, spawnPoint.position, Quaternion.identity);
+        projectile.transform.rotation = Quaternion.LookRotation(spawnPoint.forward);
         projectile.SetActive(true);
         return projectile;
     }

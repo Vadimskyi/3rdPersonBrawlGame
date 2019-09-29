@@ -20,14 +20,17 @@ namespace Vadimskyi.Game
             NetworkEvents.onCharacterHit += OnUserTyping;
             NetworkEvents.onCharacterShoot += OnUserStopTyping;*/
             NetworkEvents.onJoinGame += OnJoinGame;
+            NetworkEvents.onCharacterMoved += OnMoveCharacter;
+            NetworkEvents.onCharacterRotated += OnRotateCharacter;
 
             _manager.Socket.On("new_user_joined", NewUserJoined);
             _manager.Socket.On("user_data", OnGetUserData);
             _manager.Socket.On("combat_room_data", OnGetCombatRoomData);
+            _manager.Socket.On("character_moved", OnCharacterMoved);
+            _manager.Socket.On("character_rotated", OnCharacterRotated);
 
             _manager.Socket.On("user left", OnUserLeft);
             _manager.Socket.On("spawn character", OnSpawnCharacter);
-            _manager.Socket.On("move character", OnCharacterMoved);
             _manager.Socket.On("character shoot", OnCharacterShoot);
             _manager.Socket.On("character hit", OnCharacterHit);
             _manager.Socket.On("error", ErrorCallback);
@@ -36,6 +39,16 @@ namespace Vadimskyi.Game
         private void OnJoinGame(string username)
         {
             _manager.Socket.Emit("join_game", username);
+        }
+
+        private void OnMoveCharacter(UserMovement direction)
+        {
+            _manager.Socket.Emit("move_character", direction);
+        }
+
+        private void OnRotateCharacter(UserRotation angle)
+        {
+            _manager.Socket.Emit("rotate_character", angle);
         }
 
         private void OnGetUserData(Socket socket, Packet packet, params object[] args)
@@ -51,6 +64,16 @@ namespace Vadimskyi.Game
             //NetworkEvents.CombatRoomDataReceived();
         }
 
+        private void OnCharacterMoved(Socket socket, Packet packet, params object[] args)
+        {
+            GameEvents.CharacterMoved(JsonConvert.DeserializeObject<UserMovement>(args[0].ToString()));
+        }
+
+        private void OnCharacterRotated(Socket socket, Packet packet, params object[] args)
+        {
+            GameEvents.CharacterRotated(JsonConvert.DeserializeObject<UserRotation>(args[0].ToString()));
+        }
+
         private void NewUserJoined(Socket socket, Packet packet, params object[] args)
         {
 
@@ -59,11 +82,6 @@ namespace Vadimskyi.Game
         private void OnSpawnCharacter(Socket socket, Packet packet, params object[] args)
         {
             //NetworkEvents.NewMessageReceived(JsonConvert.DeserializeObject<ChatMessage>(args[0].ToString()));
-        }
-
-        private void OnCharacterMoved(Socket socket, Packet packet, params object[] args)
-        {
-            //NetworkEvents.UserTyping(args[0].ToString());
         }
 
         private void OnCharacterShoot(Socket socket, Packet packet, params object[] args)

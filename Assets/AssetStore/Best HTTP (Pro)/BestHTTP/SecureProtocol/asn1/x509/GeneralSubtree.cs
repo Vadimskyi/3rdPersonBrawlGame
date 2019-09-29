@@ -180,7 +180,11 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509
 				v.Add(new DerTaggedObject(false, 0, minimum));
 			}
 
-            v.AddOptionalTagged(false, 1, maximum);
+			if (maximum != null)
+			{
+				v.Add(new DerTaggedObject(false, 1, maximum));
+			}
+
 			return new DerSequence(v);
 		}
 	}

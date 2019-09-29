@@ -21,20 +21,18 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
 		{
 			lock (this)
 			{
-                if (null != encoded)
-                {
-                    Asn1EncodableVector v = new Asn1EncodableVector();
-                    Asn1InputStream e = new LazyAsn1InputStream(encoded);
+				if (encoded != null)
+				{
+					Asn1InputStream e = new LazyAsn1InputStream(encoded);
 
-                    Asn1Object o;
-                    while ((o = e.ReadObject()) != null)
-                    {
-                        v.Add(o);
-                    }
+					Asn1Object o;
+					while ((o = e.ReadObject()) != null)
+					{
+						AddObject(o);
+					}
 
-                    this.elements = v.TakeElements();
-                    this.encoded = null;
-                }
+					encoded = null;
+				}
 			}
 		}
 

@@ -195,13 +195,13 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509
             }
 
 			if (seqPos < seq.Count
-                && !(seq[seqPos] is Asn1TaggedObject))
+                && !(seq[seqPos] is DerTaggedObject))
             {
 				revokedCertificates = Asn1Sequence.GetInstance(seq[seqPos++]);
 			}
 
 			if (seqPos < seq.Count
-                && seq[seqPos] is Asn1TaggedObject)
+                && seq[seqPos] is DerTaggedObject)
             {
 				crlExtensions = X509Extensions.GetInstance(seq[seqPos]);
 			}

@@ -65,7 +65,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Utilities
                     }
                 }
             }
-            else if (obj is Asn1TaggedObject)
+            else if (obj is DerTaggedObject)
             {
                 string tab = indent + Tab;
                 buf.Append(indent);
@@ -78,7 +78,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Utilities
                     buf.Append("Tagged [");
                 }
 
-                Asn1TaggedObject o = (Asn1TaggedObject)obj;
+                DerTaggedObject o = (DerTaggedObject)obj;
 
                 buf.Append(((int)o.TagNo).ToString());
                 buf.Append(']');

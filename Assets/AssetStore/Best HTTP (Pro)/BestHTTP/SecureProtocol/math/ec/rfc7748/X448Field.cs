@@ -3,6 +3,8 @@
 using System;
 using System.Diagnostics;
 
+using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.Raw;
+
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Rfc7748
 {
     [CLSCompliantAttribute(false)]
@@ -12,7 +14,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Rfc7748
 
         private const uint M28 = 0x0FFFFFFFU;
 
-        protected X448Field() {}
+        private X448Field() {}
 
         public static void Add(uint[] x, uint[] y, uint[] z)
         {
@@ -74,20 +76,6 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Rfc7748
             z[8] = z8; z[9] = z9; z[10] = z10; z[11] = z11; z[12] = z12; z[13] = z13; z[14] = z14; z[15] = z15;
         }
 
-        public static void CMov(int cond, uint[] x, int xOff, uint[] z, int zOff)
-        {
-            Debug.Assert(0 == cond || -1 == cond);
-
-            uint MASK = (uint)cond;
-
-            for (int i = 0; i < Size; ++i)
-            {
-                uint z_i = z[zOff + i], diff = z_i ^ x[xOff + i];
-                z_i ^= (diff & MASK);
-                z[zOff + i] = z_i;
-            }
-        }
-
         public static void CNegate(int negate, uint[] z)
         {
             Debug.Assert(negate >> 1 == 0);
@@ -95,7 +83,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Rfc7748
             uint[] t = Create();
             Sub(t, z, t);
 
-            CMov(-negate, t, 0, z, 0);
+            Nat.CMov(Size, negate, t, 0, z, 0);
         }
 
         public static void Copy(uint[] x, int xOff, uint[] z, int zOff)
@@ -209,21 +197,14 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Rfc7748
             Mul(t, x, z);
         }
 
-        public static int IsZero(uint[] x)
+        public static bool IsZeroVar(uint[] x)
         {
             uint d = 0;
             for (int i = 0; i < Size; ++i)
             {
                 d |= x[i];
             }
-            d |= d >> 16;
-            d &= 0xFFFF;
-            return ((int)d - 1) >> 31;
-        }
-
-        public static bool IsZeroVar(uint[] x)
-        {
-            return 0U != IsZero(x);
+            return d == 0U;
         }
 
         public static void Mul(uint[] x, uint y, uint[] z)

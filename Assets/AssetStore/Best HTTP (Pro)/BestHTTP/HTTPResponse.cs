@@ -759,11 +759,8 @@ namespace BestHTTP
 
                     do
                     {
-                        // tryToReadCount contain how much bytes we want to read in once. We try to read the buffer fully in once, 
-                        //  but with a limit of the remaining contentLength.
-                        int tryToReadCount = (int)Math.Min(Math.Min(int.MaxValue, contentLength), buffer.Length - readBytes);
-						
-                        int bytes = stream.Read(buffer, readBytes, tryToReadCount);
+                        int readbuffer = (int)Math.Min(2147483646, (uint)contentLength);
+                        int bytes = stream.Read(buffer, readBytes, Math.Min(readbuffer, buffer.Length - readBytes));
 
                         if (bytes <= 0)
                             throw ExceptionHelper.ServerClosedTCPStream();

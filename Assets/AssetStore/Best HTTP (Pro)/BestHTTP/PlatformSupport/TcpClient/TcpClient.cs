@@ -347,7 +347,8 @@ namespace BestHTTP.PlatformSupport.TcpClient.General
                             client.Disconnect(true);
                         }
                         catch
-                        { }
+                        {
+                        }
 
                         throw new TimeoutException("Connection timed out!");
                     }

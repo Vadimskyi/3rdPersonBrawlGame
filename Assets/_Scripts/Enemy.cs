@@ -2,46 +2,49 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+namespace Vadimskyi.Game
 {
-    [SerializeField]
-    private float _attackRefreshRate = 1.5f;
-    [SerializeField]
-    private int _attackDamage = 2;
-
-    private AggroDetection _aggroDetection;
-    private Health _healthTarget;
-    private float _attackTimer;
-
-    private void Awake()
+    public class Enemy : MonoBehaviour
     {
-        _aggroDetection = GetComponent<AggroDetection>();
-        _aggroDetection.OnAggro += AggroDetection_OnAggro;
-    }
+        [SerializeField]
+        private float _attackRefreshRate = 1.5f;
+        [SerializeField]
+        private int _attackDamage = 2;
 
-    private void AggroDetection_OnAggro(Transform target)
-    {
-        _healthTarget = target.GetComponent<Health>();
-    }
+        private AggroDetection _aggroDetection;
+        private PlayerHealth _playerHealthTarget;
+        private float _attackTimer;
 
-    private void Update()
-    {
-        if (_healthTarget)
+        private void Awake()
         {
-            _attackTimer += Time.deltaTime;
-            if (CanAttack())
-                Attack();
+            _aggroDetection = GetComponent<AggroDetection>();
+            _aggroDetection.OnAggro += AggroDetection_OnAggro;
         }
-    }
 
-    private void Attack()
-    {
-        _attackTimer = 0;
-        _healthTarget?.TakeDamage(_attackDamage);
-    }
+        private void AggroDetection_OnAggro(Transform target)
+        {
+            _playerHealthTarget = target.GetComponent<PlayerHealth>();
+        }
 
-    private bool CanAttack()
-    {
-        return _attackTimer >= _attackRefreshRate;
+        private void Update()
+        {
+            if (_playerHealthTarget != null)
+            {
+                _attackTimer += Time.deltaTime;
+                if (CanAttack())
+                    Attack();
+            }
+        }
+
+        private void Attack()
+        {
+            _attackTimer = 0;
+            _playerHealthTarget?.TakeDamage(_attackDamage);
+        }
+
+        private bool CanAttack()
+        {
+            return _attackTimer >= _attackRefreshRate;
+        }
     }
 }

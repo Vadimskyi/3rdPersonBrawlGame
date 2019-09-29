@@ -106,17 +106,21 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509.Qualified
             return nameRegistrationAuthorities;
         }
 
-        public override Asn1Object ToAsn1Object()
+		public override Asn1Object ToAsn1Object()
         {
-            Asn1EncodableVector v = new Asn1EncodableVector();
-            v.AddOptional(semanticsIdentifier);
+            Asn1EncodableVector seq = new Asn1EncodableVector();
 
-            if (null != nameRegistrationAuthorities)
+            if (this.semanticsIdentifier != null)
             {
-                v.Add(new DerSequence(nameRegistrationAuthorities));
+                seq.Add(semanticsIdentifier);
             }
 
-            return new DerSequence(v);
+			if (this.nameRegistrationAuthorities != null)
+            {
+                seq.Add(new DerSequence(nameRegistrationAuthorities));
+            }
+
+			return new DerSequence(seq);
         }
     }
 }

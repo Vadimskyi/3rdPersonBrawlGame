@@ -8,7 +8,7 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Security;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
 {
-	public interface RecipientInfoGenerator
+	interface RecipientInfoGenerator
 	{
 		/// <summary>
 		/// Generate a RecipientInfo object for the given key.

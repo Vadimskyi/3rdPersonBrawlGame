@@ -71,7 +71,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509
 			//
 			// some certficates don't include a version number - we assume v1
 			//
-			if (seq[0] is Asn1TaggedObject)
+			if (seq[0] is DerTaggedObject)
 			{
 				version = DerInteger.GetInstance((Asn1TaggedObject)seq[0], true);
 			}
@@ -123,7 +123,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509
 
             while (extras > 0)
 			{
-                Asn1TaggedObject extra = Asn1TaggedObject.GetInstance(seq[seqStart + 6 + extras]);
+				DerTaggedObject extra = (DerTaggedObject)seq[seqStart + 6 + extras];
+
 				switch (extra.TagNo)
 				{
 				case 1:

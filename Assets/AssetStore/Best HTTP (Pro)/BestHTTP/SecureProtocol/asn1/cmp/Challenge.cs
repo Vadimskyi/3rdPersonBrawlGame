@@ -74,7 +74,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Cmp
 		{
 			Asn1EncodableVector v = new Asn1EncodableVector();
 			v.AddOptional(owf);
-			v.Add(witness, challenge);
+			v.Add(witness);
+			v.Add(challenge);
 			return new DerSequence(v);
 		}
 	}

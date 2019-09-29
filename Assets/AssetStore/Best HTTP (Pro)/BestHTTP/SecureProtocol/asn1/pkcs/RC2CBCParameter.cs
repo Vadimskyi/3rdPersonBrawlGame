@@ -65,12 +65,18 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Pkcs
 			return Arrays.Clone(iv.GetOctets());
         }
 
-        public override Asn1Object ToAsn1Object()
+		public override Asn1Object ToAsn1Object()
         {
             Asn1EncodableVector v = new Asn1EncodableVector();
-            v.AddOptional(version);
-            v.Add(iv);
-            return new DerSequence(v);
+
+			if (version != null)
+            {
+                v.Add(version);
+            }
+
+			v.Add(iv);
+
+			return new DerSequence(v);
         }
     }
 }

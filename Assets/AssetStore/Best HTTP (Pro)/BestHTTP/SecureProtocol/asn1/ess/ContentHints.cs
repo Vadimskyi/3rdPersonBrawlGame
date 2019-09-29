@@ -82,8 +82,14 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Ess
 		public override Asn1Object ToAsn1Object()
 		{
 			Asn1EncodableVector v = new Asn1EncodableVector();
-            v.AddOptional(contentDescription);
+
+			if (contentDescription != null)
+			{
+				v.Add(contentDescription);
+			}
+
 			v.Add(contentType);
+
 			return new DerSequence(v);
 		}
 	}

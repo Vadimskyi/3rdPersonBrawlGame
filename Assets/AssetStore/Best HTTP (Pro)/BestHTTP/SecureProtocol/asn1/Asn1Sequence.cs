@@ -12,8 +12,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
     public abstract class Asn1Sequence
         : Asn1Object, IEnumerable
     {
-        // NOTE: Only non-readonly to support LazyDerSequence
-        internal Asn1Encodable[] elements;
+        private readonly IList seq;
 
         /**
          * return an Asn1Sequence from the given object.
@@ -109,38 +108,21 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
             throw new ArgumentException("Unknown object in GetInstance: " + BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Platform.GetTypeName(obj), "obj");
         }
 
-        protected internal Asn1Sequence()
+        protected internal Asn1Sequence(
+            int capacity)
         {
-            this.elements = Asn1EncodableVector.EmptyElements;
-        }
-
-        protected internal Asn1Sequence(Asn1Encodable element)
-        {
-            if (null == element)
-                throw new ArgumentNullException("element");
-
-            this.elements = new Asn1Encodable[]{ element };
-        }
-
-        protected internal Asn1Sequence(params Asn1Encodable[] elements)
-        {
-            if (Arrays.IsNullOrContainsNull(elements))
-                throw new NullReferenceException("'elements' cannot be null, or contain null");
-
-            this.elements = Asn1EncodableVector.CloneElements(elements);
-        }
-
-        protected internal Asn1Sequence(Asn1EncodableVector elementVector)
-        {
-            if (null == elementVector)
-                throw new ArgumentNullException("elementVector");
-
-            this.elements = elementVector.TakeElements();
+            seq = BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Platform.CreateArrayList(capacity);
         }
 
         public virtual IEnumerator GetEnumerator()
         {
-            return elements.GetEnumerator();
+            return seq.GetEnumerator();
+        }
+
+        [Obsolete("Use GetEnumerator() instead")]
+        public IEnumerator GetObjects()
+        {
+            return GetEnumerator();
         }
 
         private class Asn1SequenceParserImpl
@@ -196,59 +178,93 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
          */
         public virtual Asn1Encodable this[int index]
         {
-            get { return elements[index]; }
+            get { return (Asn1Encodable) seq[index]; }
+        }
+
+        [Obsolete("Use 'object[index]' syntax instead")]
+        public Asn1Encodable GetObjectAt(
+            int index)
+        {
+             return this[index];
+        }
+
+        [Obsolete("Use 'Count' property instead")]
+        public int Size
+        {
+            get { return Count; }
         }
 
         public virtual int Count
         {
-            get { return elements.Length; }
-        }
-
-        public virtual Asn1Encodable[] ToArray()
-        {
-            return Asn1EncodableVector.CloneElements(elements);
+            get { return seq.Count; }
         }
 
         protected override int Asn1GetHashCode()
         {
-            //return Arrays.GetHashCode(elements);
-            int i = elements.Length;
-            int hc = i + 1;
+            int hc = Count;
 
-            while (--i >= 0)
+            foreach (object o in this)
             {
-                hc *= 257;
-                hc ^= elements[i].ToAsn1Object().CallAsn1GetHashCode();
+                hc *= 17;
+                if (o == null)
+                {
+                    hc ^= DerNull.Instance.GetHashCode();
+                }
+                else
+                {
+                    hc ^= o.GetHashCode();
+                }
             }
 
             return hc;
         }
 
-        protected override bool Asn1Equals(Asn1Object asn1Object)
+        protected override bool Asn1Equals(
+            Asn1Object asn1Object)
         {
-            Asn1Sequence that = asn1Object as Asn1Sequence;
-            if (null == that)
+            Asn1Sequence other = asn1Object as Asn1Sequence;
+
+            if (other == null)
                 return false;
 
-            int count = this.Count;
-            if (that.Count != count)
+            if (Count != other.Count)
                 return false;
 
-            for (int i = 0; i < count; ++i)
+            IEnumerator s1 = GetEnumerator();
+            IEnumerator s2 = other.GetEnumerator();
+
+            while (s1.MoveNext() && s2.MoveNext())
             {
-                Asn1Object o1 = this.elements[i].ToAsn1Object();
-                Asn1Object o2 = that.elements[i].ToAsn1Object();
+                Asn1Object o1 = GetCurrent(s1).ToAsn1Object();
+                Asn1Object o2 = GetCurrent(s2).ToAsn1Object();
 
-                if (o1 != o2 && !o1.CallAsn1Equals(o2))
+                if (!o1.Equals(o2))
                     return false;
             }
 
             return true;
         }
 
+        private Asn1Encodable GetCurrent(IEnumerator e)
+        {
+            Asn1Encodable encObj = (Asn1Encodable)e.Current;
+
+            // unfortunately null was allowed as a substitute for DER null
+            if (encObj == null)
+                return DerNull.Instance;
+
+            return encObj;
+        }
+
+        protected internal void AddObject(
+            Asn1Encodable obj)
+        {
+            seq.Add(obj);
+        }
+
         public override string ToString()
         {
-            return CollectionUtilities.ToString(elements);
+            return CollectionUtilities.ToString(seq);
         }
     }
 }

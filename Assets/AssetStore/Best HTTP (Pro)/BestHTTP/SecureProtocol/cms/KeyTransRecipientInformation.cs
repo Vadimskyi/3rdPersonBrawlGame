@@ -57,18 +57,12 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
         }
 
 		private string GetExchangeEncryptionAlgorithmName(
-			AlgorithmIdentifier algo)
+			DerObjectIdentifier oid)
 		{
-		    DerObjectIdentifier oid = algo.Algorithm;
-
-            if (Asn1Pkcs.PkcsObjectIdentifiers.RsaEncryption.Equals(oid))
+			if (Asn1Pkcs.PkcsObjectIdentifiers.RsaEncryption.Equals(oid))
 			{
 				return "RSA//PKCS1Padding";
-			} else if (Asn1Pkcs.PkcsObjectIdentifiers.IdRsaesOaep.Equals(oid))
-            {
-                 Asn1Pkcs.RsaesOaepParameters rsaParams = Asn1Pkcs.RsaesOaepParameters.GetInstance(algo.Parameters);                       
-                return "RSA//OAEPWITH"+DigestUtilities.GetAlgorithmName(rsaParams.HashAlgorithm.Algorithm)+"ANDMGF1Padding";
-            }
+			}
 
 			return oid.Id;
 		}
@@ -76,7 +70,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Cms
 		internal KeyParameter UnwrapKey(ICipherParameters key)
 		{
 			byte[] encryptedKey = info.EncryptedKey.GetOctets();
-            string keyExchangeAlgorithm = GetExchangeEncryptionAlgorithmName(keyEncAlg);
+            string keyExchangeAlgorithm = GetExchangeEncryptionAlgorithmName(keyEncAlg.Algorithm);
 
 			try
 			{

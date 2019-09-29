@@ -81,8 +81,13 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Ocsp
         public override Asn1Object ToAsn1Object()
         {
             Asn1EncodableVector v = new Asn1EncodableVector(reqCert);
-            v.AddOptionalTagged(true, 0, singleRequestExtensions);
-            return new DerSequence(v);
+
+			if (singleRequestExtensions != null)
+            {
+                v.Add(new DerTaggedObject(true, 0, singleRequestExtensions));
+            }
+
+			return new DerSequence(v);
         }
     }
 }

@@ -103,9 +103,15 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Crmf
         public override Asn1Object ToAsn1Object()
         {
             Asn1EncodableVector v = new Asn1EncodableVector();
-            v.AddOptionalTagged(false, 0, poposkInput);
+
+            if (poposkInput != null)
+            {
+                v.Add(new DerTaggedObject(false, 0, poposkInput));
+            }
+
             v.Add(algorithmIdentifier);
             v.Add(signature);
+
             return new DerSequence(v);
         }
     }

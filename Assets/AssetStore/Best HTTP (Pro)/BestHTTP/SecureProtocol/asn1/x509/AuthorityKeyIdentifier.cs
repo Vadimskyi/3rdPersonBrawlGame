@@ -186,10 +186,23 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509
         public override Asn1Object ToAsn1Object()
         {
             Asn1EncodableVector v = new Asn1EncodableVector();
-            v.AddOptionalTagged(false, 0, keyidentifier);
-            v.AddOptionalTagged(false, 1, certissuer);
-            v.AddOptionalTagged(false, 2, certserno);
-            return new DerSequence(v);
+
+			if (keyidentifier != null)
+            {
+                v.Add(new DerTaggedObject(false, 0, keyidentifier));
+            }
+
+			if (certissuer != null)
+            {
+                v.Add(new DerTaggedObject(false, 1, certissuer));
+            }
+
+			if (certserno != null)
+            {
+                v.Add(new DerTaggedObject(false, 2, certserno));
+            }
+
+			return new DerSequence(v);
         }
 
 		public override string ToString()

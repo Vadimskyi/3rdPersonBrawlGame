@@ -7,11 +7,17 @@ namespace Vadimskyi.Game
 {
     public static class GameEvents
     {
-        public static event Action<string> onUserEnterPlayMode = delegate { };
+        public static event Action<UserMovement> onCharacterMoved = delegate { };
+        public static event Action<UserRotation> onCharacterRotated = delegate { };
 
-        public static void UserEnterPlayMode(string username)
+        internal static void CharacterMoved(UserMovement direction)
         {
-            onUserEnterPlayMode?.Invoke(username);
+            onCharacterMoved?.Invoke(direction);
+        }
+
+        internal static void CharacterRotated(UserRotation angle)
+        {
+            onCharacterRotated?.Invoke(angle);
         }
     }
 }

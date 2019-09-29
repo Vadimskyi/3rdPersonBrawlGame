@@ -136,11 +136,6 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Custom.Sec
 
                 x = (uint)c;
             }
-
-            if (z[3] >= P3 && Nat128.Gte(z, P))
-            {
-                AddPInvTo(z);
-            }
         }
 
         public static void Square(uint[] x, uint[] z)

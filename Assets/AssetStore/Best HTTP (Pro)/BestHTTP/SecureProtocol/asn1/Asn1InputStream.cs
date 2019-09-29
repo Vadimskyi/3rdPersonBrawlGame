@@ -100,13 +100,13 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
                         //
                         // yes, people actually do this...
                         //
-                        return new BerOctetString(ReadVector(defIn));
+                        return new BerOctetString(BuildDerEncodableVector(defIn));
                     case Asn1Tags.Sequence:
                         return CreateDerSequence(defIn);
                     case Asn1Tags.Set:
                         return CreateDerSet(defIn);
                     case Asn1Tags.External:
-                        return new DerExternal(ReadVector(defIn));                
+                        return new DerExternal(BuildDerEncodableVector(defIn));                
                     default:
                         throw new IOException("unknown tag " + tagNo + " encountered");
                 }
@@ -115,15 +115,12 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
             return CreatePrimitiveDerObject(tagNo, defIn, tmpBuffers);
         }
 
-        internal virtual Asn1EncodableVector ReadVector(DefiniteLengthInputStream dIn)
+        internal Asn1EncodableVector BuildEncodableVector()
         {
-            if (dIn.Remaining < 1)
-                return new Asn1EncodableVector(0);
-
-            Asn1InputStream subStream = new Asn1InputStream(dIn);
             Asn1EncodableVector v = new Asn1EncodableVector();
+
             Asn1Object o;
-            while ((o = subStream.ReadObject()) != null)
+            while ((o = ReadObject()) != null)
             {
                 v.Add(o);
             }
@@ -131,16 +128,22 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
             return v;
         }
 
+        internal virtual Asn1EncodableVector BuildDerEncodableVector(
+            DefiniteLengthInputStream dIn)
+        {
+            return new Asn1InputStream(dIn).BuildEncodableVector();
+        }
+
         internal virtual DerSequence CreateDerSequence(
             DefiniteLengthInputStream dIn)
         {
-            return DerSequence.FromVector(ReadVector(dIn));
+            return DerSequence.FromVector(BuildDerEncodableVector(dIn));
         }
 
         internal virtual DerSet CreateDerSet(
             DefiniteLengthInputStream dIn)
         {
-            return DerSet.FromVector(ReadVector(dIn), false);
+            return DerSet.FromVector(BuildDerEncodableVector(dIn), false);
         }
 
         public Asn1Object ReadObject()

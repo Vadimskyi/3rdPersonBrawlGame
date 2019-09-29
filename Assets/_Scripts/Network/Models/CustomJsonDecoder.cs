@@ -28,7 +28,7 @@ namespace Vadimskyi.Utils
 
         public string Encode(List<object> obj)
         {
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings{ ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
         }
     }
 }

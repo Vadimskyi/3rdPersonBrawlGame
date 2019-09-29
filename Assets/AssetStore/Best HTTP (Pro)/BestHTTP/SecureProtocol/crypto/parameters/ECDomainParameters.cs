@@ -10,13 +10,12 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
 {
     public class ECDomainParameters
     {
-        private readonly ECCurve     curve;
-        private readonly byte[] seed;
-        private readonly ECPoint g;
-        private readonly BigInteger n;
-        private readonly BigInteger h;
-
-        private BigInteger hInv;
+        internal ECCurve     curve;
+        internal byte[]      seed;
+        internal ECPoint     g;
+        internal BigInteger  n;
+        internal BigInteger  h;
+        internal BigInteger  hInv;
 
         public ECDomainParameters(
             ECCurve     curve,
@@ -51,7 +50,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
             // we can't check for h == null here as h is optional in X9.62 as it is not required for ECDSA
 
             this.curve = curve;
-            this.g = ValidatePublicPoint(curve, g);
+            this.g = Validate(curve, g);
             this.n = n;
             this.h = h;
             this.seed = Arrays.Clone(seed);
@@ -116,42 +115,26 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
         {
             return curve.Equals(other.curve)
                 &&	g.Equals(other.g)
-                &&	n.Equals(other.n);
+                &&	n.Equals(other.n)
+                &&  h.Equals(other.h);
         }
 
         public override int GetHashCode()
         {
-            //return Arrays.GetHashCode(new object[]{ curve, g, n });
-            int hc = 4;
-            hc *= 257;
-            hc ^= curve.GetHashCode();
-            hc *= 257;
+            int hc = curve.GetHashCode();
+            hc *= 37;
             hc ^= g.GetHashCode();
-            hc *= 257;
+            hc *= 37;
             hc ^= n.GetHashCode();
+            hc *= 37;
+            hc ^= h.GetHashCode();
             return hc;
         }
 
-        public BigInteger ValidatePrivateScalar(BigInteger d)
+        internal static ECPoint Validate(ECCurve c, ECPoint q)
         {
-            if (null == d)
-                throw new ArgumentNullException("d", "Scalar cannot be null");
-
-            if (d.CompareTo(BigInteger.One) < 0 || (d.CompareTo(N) >= 0))
-                throw new ArgumentException("Scalar is not in the interval [1, n - 1]", "d");
-
-            return d;
-        }
-
-        public ECPoint ValidatePublicPoint(ECPoint q)
-        {
-            return ValidatePublicPoint(Curve, q);
-        }
-
-        internal static ECPoint ValidatePublicPoint(ECCurve c, ECPoint q)
-        {
-            if (null == q)
-                throw new ArgumentNullException("q", "Point cannot be null");
+            if (q == null)
+                throw new ArgumentException("Point has null value", "q");
 
             q = ECAlgorithms.ImportPoint(c, q).Normalize();
 

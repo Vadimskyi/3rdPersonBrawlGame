@@ -634,10 +634,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.Raw
                 c += x_i * y_7 + zz[i + 7];
                 zz[i + 7] = (uint)c;
                 c >>= 32;
-
-                zc += c + zz[i + 8];
-                zz[i + 8] = (uint)zc;
-                zc >>= 32;
+                c += zc + zz[i + 8];
+                zz[i + 8] = (uint)c;
+                zc = c >> 32;
             }
             return (uint)zc;
         }
@@ -681,10 +680,9 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.Raw
                 c += x_i * y_7 + zz[zzOff + 7];
                 zz[zzOff + 7] = (uint)c;
                 c >>= 32;
-
-                zc += c + zz[zzOff + 8];
-                zz[zzOff + 8] = (uint)zc;
-                zc >>= 32;
+                c += zc + zz[zzOff + 8];
+                zz[zzOff + 8] = (uint)c;
+                zc = c >> 32;
                 ++zzOff;
             }
             return (uint)zc;

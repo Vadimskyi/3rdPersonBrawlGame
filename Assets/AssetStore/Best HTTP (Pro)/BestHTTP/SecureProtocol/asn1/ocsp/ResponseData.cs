@@ -142,14 +142,19 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Ocsp
         {
             Asn1EncodableVector v = new Asn1EncodableVector();
 
-            if (versionPresent || !version.Equals(V1))
+			if (versionPresent || !version.Equals(V1))
+			{
+				v.Add(new DerTaggedObject(true, 0, version));
+			}
+
+			v.Add(responderID, producedAt, responses);
+
+			if (responseExtensions != null)
             {
-                v.Add(new DerTaggedObject(true, 0, version));
+                v.Add(new DerTaggedObject(true, 1, responseExtensions));
             }
 
-            v.Add(responderID, producedAt, responses);
-            v.AddOptionalTagged(true, 1, responseExtensions);
-            return new DerSequence(v);
+			return new DerSequence(v);
         }
     }
 }

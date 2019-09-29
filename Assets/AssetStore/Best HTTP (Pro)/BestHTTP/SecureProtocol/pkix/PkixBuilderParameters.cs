@@ -86,7 +86,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Pkix
 		{
 			if (excludedCerts == null)
 			{
-				this.excludedCerts = new HashSet();
+				excludedCerts = new HashSet();
 			}
 			else
 			{

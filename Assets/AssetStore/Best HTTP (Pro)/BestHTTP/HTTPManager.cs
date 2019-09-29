@@ -213,7 +213,7 @@ namespace BestHTTP
         /// <summary>
         /// User-agent string that will be sent with each requests.
         /// </summary>
-        public static string UserAgent = "BestHTTP 1.12.3";
+        public static string UserAgent = "BestHTTP 1.12.1";
 
         #endregion
 

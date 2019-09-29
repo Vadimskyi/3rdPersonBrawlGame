@@ -13,6 +13,7 @@ namespace Vadimskyi.Game
         public int UserId { get; set; }
         public float MaxHealth { get; set; }
         public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
 
         [JsonIgnore]
         public IWeapon Weapon { get; set; }

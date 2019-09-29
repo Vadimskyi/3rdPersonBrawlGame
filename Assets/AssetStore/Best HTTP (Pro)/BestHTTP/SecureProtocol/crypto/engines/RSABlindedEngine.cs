@@ -51,29 +51,13 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines
             {
                 ParametersWithRandom rParam = (ParametersWithRandom)param;
 
-                this.key = (RsaKeyParameters)rParam.Parameters;
-
-                if (key is RsaPrivateCrtKeyParameters)
-                {
-                    this.random = rParam.Random;
-                }
-                else
-                {
-                    this.random = null;
-                }
+                key = (RsaKeyParameters)rParam.Parameters;
+                random = rParam.Random;
             }
             else
             {
-                this.key = (RsaKeyParameters)param;
-
-                if (key is RsaPrivateCrtKeyParameters)
-                {
-                    this.random = new SecureRandom();
-                }
-                else
-                {
-                    this.random = null;
-                }
+                key = (RsaKeyParameters)param;
+                random = new SecureRandom();
             }
         }
 

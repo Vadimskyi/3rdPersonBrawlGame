@@ -212,36 +212,36 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
             return identifier;
         }
 
-        private static bool IsValidBranchID(string branchID, int start)
+        private static bool IsValidBranchID(
+            String branchID, int start)
         {
-            int digitCount = 0;
+            bool periodAllowed = false;
 
             int pos = branchID.Length;
             while (--pos >= start)
             {
                 char ch = branchID[pos];
 
+                // TODO Leading zeroes?
+                if ('0' <= ch && ch <= '9')
+                {
+                    periodAllowed = true;
+                    continue;
+                }
+
                 if (ch == '.')
                 {
-                    if (0 == digitCount || (digitCount > 1 && branchID[pos + 1] == '0'))
+                    if (!periodAllowed)
                         return false;
 
-                    digitCount = 0;
+                    periodAllowed = false;
+                    continue;
                 }
-                else if ('0' <= ch && ch <= '9')
-                {
-                    ++digitCount;
-                }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
 
-            if (0 == digitCount || (digitCount > 1 && branchID[pos + 1] == '0'))
-                return false;
-
-            return true;
+            return periodAllowed;
         }
 
         private static bool IsValidIdentifier(string identifier)

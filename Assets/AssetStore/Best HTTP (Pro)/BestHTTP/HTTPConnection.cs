@@ -607,29 +607,20 @@ namespace BestHTTP
                 return false;
             }
 
-            try
+            CurrentRequest.Response.CacheFileInfo = cacheEntity;
+
+            int bodyLength;
+            using (var cacheStream = cacheEntity.GetBodyStream(out bodyLength))
             {
-                int bodyLength;
-                using (var cacheStream = cacheEntity.GetBodyStream(out bodyLength))
-                {
-                    if (cacheStream == null)
-                        return false;
+                if (cacheStream == null)
+                    return false;
 
-                    if (!CurrentRequest.Response.HasHeader("content-length"))
-                        CurrentRequest.Response.AddHeader("content-length", bodyLength.ToString());
-                    CurrentRequest.Response.IsFromCache = true;
+                if (!CurrentRequest.Response.HasHeader("content-length"))
+                    CurrentRequest.Response.AddHeader("content-length", bodyLength.ToString());
+                CurrentRequest.Response.IsFromCache = true;
 
-                    if (!CurrentRequest.CacheOnly)
-                        CurrentRequest.Response.ReadRaw(cacheStream, bodyLength);
-                }
-
-                CurrentRequest.Response.CacheFileInfo = cacheEntity;
-            }
-            catch
-            {
-                cacheEntity.Delete();
-
-                return false;
+                if (!CurrentRequest.CacheOnly)
+                    CurrentRequest.Response.ReadRaw(cacheStream, bodyLength);
             }
 
             return true;

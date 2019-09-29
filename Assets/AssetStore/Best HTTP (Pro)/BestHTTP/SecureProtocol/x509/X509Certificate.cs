@@ -10,13 +10,13 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Misc;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Utilities;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto;
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Operators;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Math;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Security;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Security.Certificates;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Encoders;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.X509.Extension;
+using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Operators;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.X509
 {
@@ -29,16 +29,13 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.X509
 //		, PKCS12BagAttributeCarrier
     {
         private readonly X509CertificateStructure c;
-        //private Hashtable pkcs12Attributes = BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Platform.CreateHashtable();
-        //private ArrayList pkcs12Ordering = BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Platform.CreateArrayList();
+//        private Hashtable pkcs12Attributes = new Hashtable();
+//        private ArrayList pkcs12Ordering = new ArrayList();
 		private readonly BasicConstraints basicConstraints;
 		private readonly bool[] keyUsage;
 
-        private readonly object cacheLock = new object();
-        private AsymmetricKeyParameter publicKeyValue;
-
-		private volatile bool hashValueSet;
-        private volatile int hashValue;
+		private bool hashValueSet;
+		private int hashValue;
 
 		protected X509Certificate()
 		{
@@ -392,24 +389,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.X509
 		/// <returns>The public key parameters.</returns>
 		public virtual AsymmetricKeyParameter GetPublicKey()
 		{
-            // Cache the public key to support repeated-use optimizations
-            lock (cacheLock)
-            {
-                if (null != publicKeyValue)
-                    return publicKeyValue;
-            }
-
-			AsymmetricKeyParameter temp = PublicKeyFactory.CreateKey(c.SubjectPublicKeyInfo);
-
-            lock (cacheLock)
-            {
-                if (null == publicKeyValue)
-                {
-                    publicKeyValue = temp;
-                }
-
-                return publicKeyValue;
-            }
+			return PublicKeyFactory.CreateKey(c.SubjectPublicKeyInfo);
 		}
 
 		/// <summary>
@@ -421,40 +401,35 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.X509
 			return c.GetDerEncoded();
 		}
 
-        public override bool Equals(object other)
+		public override bool Equals(
+			object obj)
 		{
-			if (this == other)
+			if (obj == this)
 				return true;
 
-			X509Certificate that = other as X509Certificate;
-			if (null == that)
+			X509Certificate other = obj as X509Certificate;
+
+			if (other == null)
 				return false;
 
-            if (this.hashValueSet && that.hashValueSet)
-            {
-                if (this.hashValue != that.hashValue)
-                    return false;
-            }
-            else if (!this.c.Signature.Equals(that.c.Signature))
-            {
-                return false;
-            }
-
-			return this.c.Equals(that.c);
+			return c.Equals(other.c);
 
 			// NB: May prefer this implementation of Equals if more than one certificate implementation in play
-            //return Arrays.AreEqual(this.GetEncoded(), that.GetEncoded());
+//			return Arrays.AreEqual(this.GetEncoded(), other.GetEncoded());
 		}
 
 		public override int GetHashCode()
 		{
-			if (!hashValueSet)
+			lock (this)
 			{
-				hashValue = this.c.GetHashCode();
-				hashValueSet = true;
+				if (!hashValueSet)
+				{
+					hashValue = c.GetHashCode();
+					hashValueSet = true;
+				}
 			}
 
-            return hashValue;
+			return hashValue;
 		}
 
 //		public void setBagAttribute(

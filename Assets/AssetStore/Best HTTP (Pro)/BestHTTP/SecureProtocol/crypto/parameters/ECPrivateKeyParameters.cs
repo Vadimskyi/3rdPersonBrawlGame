@@ -26,7 +26,10 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
             DerObjectIdentifier publicKeyParamSet)
             : base("ECGOST3410", true, publicKeyParamSet)
         {
-            this.d = Parameters.ValidatePrivateScalar(d);
+            if (d == null)
+                throw new ArgumentNullException("d");
+
+            this.d = d;
         }
 
         public ECPrivateKeyParameters(
@@ -35,7 +38,10 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
             ECDomainParameters	parameters)
             : base(algorithm, true, parameters)
         {
-            this.d = Parameters.ValidatePrivateScalar(d);
+            if (d == null)
+                throw new ArgumentNullException("d");
+
+            this.d = d;
         }
 
         public ECPrivateKeyParameters(
@@ -44,7 +50,10 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
             DerObjectIdentifier publicKeyParamSet)
             : base(algorithm, true, publicKeyParamSet)
         {
-            this.d = Parameters.ValidatePrivateScalar(d);
+            if (d == null)
+                throw new ArgumentNullException("d");
+
+            this.d = d;
         }
 
         public BigInteger D

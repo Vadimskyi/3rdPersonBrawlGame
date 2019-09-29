@@ -1,7 +1,6 @@
 #if !BESTHTTP_DISABLE_ALTERNATE_SSL && (!UNITY_WEBGL || UNITY_EDITOR)
 #pragma warning disable
 using System;
-using System.Text;
 
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities;
 
@@ -28,7 +27,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Crmf
             throw new ArgumentException("Invalid object: " + BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Platform.GetTypeName(obj), "obj");
         }
 
-        public Controls(params AttributeTypeAndValue[] atvs)
+		public Controls(params AttributeTypeAndValue[] atvs)
         {
             content = new DerSequence(atvs);
         }

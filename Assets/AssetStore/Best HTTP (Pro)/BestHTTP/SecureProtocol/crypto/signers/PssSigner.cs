@@ -105,7 +105,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Signers
 			IDigest					digest,
 			int						saltLen,
 			byte					trailer)
-			: this(cipher, digest, digest, saltLen, trailer)
+			: this(cipher, digest, digest, saltLen, TrailerImplicit)
 		{
 		}
 

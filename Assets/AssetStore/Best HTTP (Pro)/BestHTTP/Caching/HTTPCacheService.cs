@@ -176,37 +176,24 @@ namespace BestHTTP.Caching
             rwLock.EnterUpgradeableReadLock();
             try
             {
-                DeleteEntityImpl(uri, removeFromLibrary, true);
+                HTTPCacheFileInfo info;
+                bool inStats = library.TryGetValue(uri, out info);
+                if (inStats)
+                    info.Delete();
+
+                if (inStats && removeFromLibrary)
+                {
+                    rwLock.EnterWriteLock();
+                    library.Remove(uri);
+                    UsedIndexes.Remove(info.MappedNameIDX);
+                    rwLock.ExitWriteLock();
+                }
 
                 return true;
             }
             finally
             {
                 rwLock.ExitUpgradeableReadLock();
-            }
-        }
-
-        private static void DeleteEntityImpl(Uri uri, bool removeFromLibrary = true, bool useLocking = false)
-        {
-            HTTPCacheFileInfo info;
-            bool inStats = library.TryGetValue(uri, out info);
-            if (inStats)
-                info.Delete();
-
-            if (inStats && removeFromLibrary)
-            {
-                if (useLocking)
-                    rwLock.EnterWriteLock();
-                try
-                {
-                    library.Remove(uri);
-                    UsedIndexes.Remove(info.MappedNameIDX);
-                }
-                finally
-                {
-                    if (useLocking)
-                        rwLock.ExitWriteLock();
-                }
             }
         }
 
@@ -343,23 +330,6 @@ namespace BestHTTP.Caching
                 if (cacheControls.Exists(headerValue =>
                 {
                     string value = headerValue.ToLower();
-                    if (value.StartsWith("max-age"))
-                    {
-                        string[] kvp = headerValue.FindOption("max-age");
-                        if (kvp != null)
-                        {
-                            // Some cache proxies will return float values
-                            double maxAge;
-                            if (double.TryParse(kvp[1], out maxAge))
-                            {
-                                // A negative max-age value is a no cache
-                                if (maxAge <= 0)
-                                    return false;
-                            }
-                        }
-
-                    }
-
                     return value.Contains("no-store") || value.Contains("no-cache");
                 }))
                     return false;
@@ -381,18 +351,7 @@ namespace BestHTTP.Caching
             if (byteRanges != null)
                 return false;
 
-            var etag = response.GetFirstHeaderValue("ETag");
-            if (!string.IsNullOrEmpty(etag))
-                return true;
-
-            var expires = response.GetFirstHeaderValue("Expires").ToDateTime(DateTime.FromBinary(0));
-            if (expires >= DateTime.UtcNow)
-                return true;
-
-            if (response.GetFirstHeaderValue("Last-Modified") != null)
-                return true;
-
-            return false;
+            return true;
         }
 
         internal static HTTPCacheFileInfo Store(Uri uri, HTTPMethods method, HTTPResponse response)
@@ -425,7 +384,7 @@ namespace BestHTTP.Caching
                 catch
                 {
                     // If something happens while we write out the response, than we will delete it because it might be in an invalid state.
-                    DeleteEntityImpl(uri);
+                    DeleteEntity(uri);
 
                     throw;
                 }
@@ -468,7 +427,7 @@ namespace BestHTTP.Caching
             catch
             {
                 // If something happens while we write out the response, than we will delete it because it might be in an invalid state.
-                DeleteEntityImpl(uri, true, true);
+                DeleteEntity(uri);
 
                 throw;
             }
@@ -570,8 +529,8 @@ namespace BestHTTP.Caching
                 foreach (var kvp in library)
                     if (kvp.Value.LastAccess < deleteOlderAccessed)
                     {
-                        DeleteEntityImpl(kvp.Key, false, false);
-                        removedEntities.Add(kvp.Value);
+                        if (DeleteEntity(kvp.Key, false))
+                            removedEntities.Add(kvp.Value);
                     }
 
                 for (int i = 0; i < removedEntities.Count; ++i)
@@ -581,7 +540,7 @@ namespace BestHTTP.Caching
                 }
                 removedEntities.Clear();
 
-                ulong cacheSize = GetCacheSizeImpl();
+                ulong cacheSize = GetCacheSize();
 
                 // This step will delete all entries starting with the oldest LastAccess property while the cache size greater then the MaxCacheSize in the given param.
                 if (cacheSize > maintananceParam.MaxCacheSize)
@@ -601,7 +560,7 @@ namespace BestHTTP.Caching
                             var fi = fileInfos[idx];
                             ulong length = (ulong)fi.BodyLength;
 
-                            DeleteEntityImpl(fi.Uri);
+                            DeleteEntity(fi.Uri);
 
                             cacheSize -= length;
                         }
@@ -643,31 +602,25 @@ namespace BestHTTP.Caching
 
         public static ulong GetCacheSize()
         {
+            ulong size = 0;
+
             if (!IsSupported)
-                return 0;
+                return size;
 
             CheckSetup();
 
             rwLock.EnterReadLock();
             try
             {
-                return GetCacheSizeImpl();
+                foreach (var kvp in library)
+                    if (kvp.Value.BodyLength > 0)
+                        size += (ulong)kvp.Value.BodyLength;
+                return size;
             }
             finally
             {
                 rwLock.ExitReadLock();
             }
-        }
-
-        private static ulong GetCacheSizeImpl()
-        {
-            ulong size = 0;
-
-            foreach (var kvp in library)
-                if (kvp.Value.BodyLength > 0)
-                    size += (ulong)kvp.Value.BodyLength;
-
-            return size;
         }
 
         #endregion

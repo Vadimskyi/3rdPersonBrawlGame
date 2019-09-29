@@ -3,32 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyMovement : MonoBehaviour
+namespace Vadimskyi.Game
 {
-    private AggroDetection _aggroDetection;
-    private NavMeshAgent _navMeshAgent;
-    private Animator _animator;
-    private Transform _target;
-
-    private void Awake()
+    public class EnemyMovement : MonoBehaviour
     {
-        _navMeshAgent = GetComponent<NavMeshAgent>();
-        _animator = GetComponentInChildren<Animator>();
-        _aggroDetection = GetComponent<AggroDetection>();
-        _aggroDetection.OnAggro += OnAggro;
-    }
+        //private AggroDetection _aggroDetection;
+        private NavMeshAgent _navMeshAgent;
+        private Animator _animator;
+        private Transform _target;
 
-    private void OnAggro(Transform target)
-    {
-        _target = target;
-    }
-
-    private void Update()
-    {
-        if (_target)
+        private void Awake()
         {
-            _navMeshAgent.SetDestination(_target.position);
-            _animator.SetFloat("speed", _navMeshAgent.velocity.magnitude);
+            _navMeshAgent = GetComponent<NavMeshAgent>();
+            _animator = GetComponentInChildren<Animator>();
+            // _aggroDetection = GetComponent<AggroDetection>();
+            //_aggroDetection.OnAggro += OnAggro;
+        }
+
+        private void OnAggro(Transform target)
+        {
+            _target = target;
+        }
+
+        private void Update()
+        {
+            if (_target)
+            {
+                _navMeshAgent.SetDestination(_target.position);
+                _animator.SetFloat("speed", _navMeshAgent.velocity.magnitude);
+            }
         }
     }
 }

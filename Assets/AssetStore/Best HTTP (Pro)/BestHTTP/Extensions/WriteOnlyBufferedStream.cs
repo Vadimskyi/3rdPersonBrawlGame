@@ -32,7 +32,6 @@ namespace BestHTTP.Extensions
             if (this._position > 0)
             {
                 this.stream.Write(this.buffer, 0, this._position);
-                this.stream.Flush();
 
                 //if (HTTPManager.Logger.Level == Logger.Loglevels.All)
                 //    HTTPManager.Logger.Information("WriteOnlyBufferedStream", string.Format("Flushed {0:N0} bytes", this._position));

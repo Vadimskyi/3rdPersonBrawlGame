@@ -17,19 +17,17 @@ public class UiCanvasController : MonoBehaviour
 
     private void Start()
     {
-        _playerRespawn.OnClickAsObservable().Subscribe(_ => { PlayerController.Instance.RespawnPlayer(); }).AddTo(this);
-        PlayerController.Instance.CurrentPlayer.View.Movement.OnMove += OnPlayerMove;
-        PlayerController.Instance.CurrentPlayer.View.Health.OnDamageTaken += HealthOnDamageTaken;
+        _playerRespawn.OnClickAsObservable().Subscribe(_ => { PlayersController.Instance.RespawnPlayer(); }).AddTo(this);
         _healthBar.Name.text = UserData.Instance.User.Name;
     }
 
-    private void HealthOnDamageTaken(int dmg)
+    public void PlayerHealthOnDamageTaken(int dmg)
     {
-        _healthBar.Health.fillAmount = (float) PlayerController.Instance.CurrentPlayer.View.Health.CurrentHealth /
-                                       PlayerController.Instance.CurrentPlayer.View.Health.MaxHealth;
+        _healthBar.Health.fillAmount = (float) PlayersController.Instance.CurrentPlayer.Health.CurrentHealth /
+                                       PlayersController.Instance.CurrentPlayer.Health.MaxHealth;
     }
 
-    private void OnPlayerMove(Transform target)
+    public void OnPlayerMove(Transform target, Vector3 direction)
     {
         _healthBar.transform.localPosition = CanvasHelper.Instance.WorldToCanvasPoint(target.position);
         _healthBar.transform.SetLocalPosition(null, 250);

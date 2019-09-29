@@ -80,8 +80,14 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.CryptoPro
 
 		public override Asn1Object ToAsn1Object()
         {
-            Asn1EncodableVector v = new Asn1EncodableVector(publicKeyParamSet, digestParamSet);
-            v.AddOptional(encryptionParamSet);
+            Asn1EncodableVector v = new Asn1EncodableVector(
+				publicKeyParamSet, digestParamSet);
+
+			if (encryptionParamSet != null)
+            {
+                v.Add(encryptionParamSet);
+            }
+
 			return new DerSequence(v);
         }
     }

@@ -84,7 +84,12 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Ess
 		public override Asn1Object ToAsn1Object()
 		{
 			Asn1EncodableVector v = new Asn1EncodableVector(certHash);
-            v.AddOptional(issuerSerial);
+
+			if (issuerSerial != null)
+			{
+				v.Add(issuerSerial);
+			}
+
 			return new DerSequence(v);
 		}
 	}

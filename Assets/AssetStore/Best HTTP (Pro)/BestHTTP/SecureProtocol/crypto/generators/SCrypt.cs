@@ -100,37 +100,31 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Generators
 			uint[] blockY = new uint[BCount];
 
 			uint[] X = new uint[BCount];
-            uint[] V = new uint[N * BCount];
+			uint[][] V = new uint[N][];
 
 			try
 			{
 				Array.Copy(B, BOff, X, 0, BCount);
 
-                int off = 0;
-                for (int i = 0; i < N; i += 2)
-                {
-                    Array.Copy(X, 0, V, off, BCount);
-                    off += BCount;
-                    BlockMix(X, blockX1, blockX2, blockY, r);
-                    Array.Copy(blockY, 0, V, off, BCount);
-                    off += BCount;
-                    BlockMix(blockY, blockX1, blockX2, X, r);
-                }
+				for (int i = 0; i < N; ++i)
+				{
+					V[i] = (uint[])X.Clone();
+					BlockMix(X, blockX1, blockX2, blockY, r);
+				}
 
 				uint mask = (uint)N - 1;
 				for (int i = 0; i < N; ++i)
 				{
-					int j = (int)(X[BCount - 16] & mask);
-                    Array.Copy(V, j * BCount, blockY, 0, BCount);
-                    Xor(blockY, X, 0, blockY);
-                    BlockMix(blockY, blockX1, blockX2, X, r);
-                }
+					uint j = X[BCount - 16] & mask;
+					Xor(X, V[j], 0, X);
+					BlockMix(X, blockX1, blockX2, blockY, r);
+				}
 
 				Array.Copy(X, 0, B, BOff, BCount);
 			}
 			finally
 			{
-				Clear(V);
+				ClearAll(V);
 				ClearAll(X, blockX1, blockX2, blockY);
 			}
 		}
@@ -151,6 +145,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Generators
 				YOff = halfLen + BOff - YOff;
 				BOff += 16;
 			}
+
+			Array.Copy(Y, 0, B, 0, Y.Length);
 		}
 
 		private static void Xor(uint[] a, uint[] b, int bOff, uint[] output)

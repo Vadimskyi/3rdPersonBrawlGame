@@ -8,7 +8,6 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Utilities;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto;
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Operators;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Math;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Security;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Security.Certificates;
@@ -17,6 +16,7 @@ using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Collections;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Date;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Utilities.Encoders;
 using BestHTTP.SecureProtocol.Org.BouncyCastle.X509.Extension;
+using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Operators;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.X509
 {
@@ -37,9 +37,6 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.X509
 		private readonly string sigAlgName;
 		private readonly byte[] sigAlgParams;
 		private readonly bool isIndirect;
-
-        private volatile bool hashValueSet;
-        private volatile int hashValue;
 
 		public X509Crl(
 			CertificateList c)
@@ -234,41 +231,27 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.X509
 			return Arrays.Clone(sigAlgParams);
 		}
 
-		public override bool Equals(object other)
+		public override bool Equals(
+			object obj)
 		{
-            if (this == other)
-                return true;
+			if (obj == this)
+				return true;
 
-            X509Crl that = other as X509Crl;
-            if (null == that)
-                return false;
+			X509Crl other = obj as X509Crl;
 
-            if (this.hashValueSet && that.hashValueSet)
-            {
-                if (this.hashValue != that.hashValue)
-                    return false;
-            }
-            else if (!this.c.Signature.Equals(that.c.Signature))
-            {
-                return false;
-            }
+			if (other == null)
+				return false;
 
-            return this.c.Equals(that.c);
+			return c.Equals(other.c);
 
-            // NB: May prefer this implementation of Equals if more than one CRL implementation in play
-			//return Arrays.AreEqual(this.GetEncoded(), that.GetEncoded());
+			// NB: May prefer this implementation of Equals if more than one certificate implementation in play
+			//return Arrays.AreEqual(this.GetEncoded(), other.GetEncoded());
 		}
 
-        public override int GetHashCode()
-        {
-            if (!hashValueSet)
-            {
-                hashValue = this.c.GetHashCode();
-                hashValueSet = true;
-            }
-
-            return hashValue;
-        }
+		public override int GetHashCode()
+		{
+			return c.GetHashCode();
+		}
 
 		/**
 		 * Returns a string representation of this CRL.

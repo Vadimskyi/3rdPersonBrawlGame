@@ -116,7 +116,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Tls
                         }
                     }
                 }
-                catch (IOException)
+                catch (IOException e)
                 {
                     // NOTE: Assume this is a timeout for the moment
                 }

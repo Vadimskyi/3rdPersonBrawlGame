@@ -11,22 +11,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
         public static readonly string PRECOMP_NAME = "bc_wnaf";
 
         private static readonly int[] DEFAULT_WINDOW_SIZE_CUTOFFS = new int[]{ 13, 41, 121, 337, 897, 2305 };
-        private static readonly int MAX_WIDTH = 16;
 
         private static readonly ECPoint[] EMPTY_POINTS = new ECPoint[0];
-
-        public static void ConfigureBasepoint(ECPoint p)
-        {
-            ECCurve c = p.Curve;
-            if (null == c)
-                return;
-
-            BigInteger n = c.Order;
-            int bits = (null == n) ? c.FieldSize + 1 : n.BitLength;
-            int confWidth = System.Math.Min(MAX_WIDTH, GetWindowSize(bits) + 3);
-
-            c.Precompute(p, PRECOMP_NAME, new ConfigureBasepointCallback(c, confWidth));
-        }
 
         public static int[] GenerateCompactNaf(BigInteger k)
         {
@@ -314,19 +300,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
          */
         public static int GetWindowSize(int bits)
         {
-            return GetWindowSize(bits, DEFAULT_WINDOW_SIZE_CUTOFFS, MAX_WIDTH);
-        }
-
-        /**
-         * Determine window width to use for a scalar multiplication of the given size.
-         * 
-         * @param bits the bit-length of the scalar to multiply by
-         * @param maxWidth the maximum window width to return 
-         * @return the window size to use
-         */
-        public static int GetWindowSize(int bits, int maxWidth)
-        {
-            return GetWindowSize(bits, DEFAULT_WINDOW_SIZE_CUTOFFS, maxWidth);
+            return GetWindowSize(bits, DEFAULT_WINDOW_SIZE_CUTOFFS);
         }
 
         /**
@@ -338,19 +312,6 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
          */
         public static int GetWindowSize(int bits, int[] windowSizeCutoffs)
         {
-            return GetWindowSize(bits, windowSizeCutoffs, MAX_WIDTH);
-        }
-
-        /**
-         * Determine window width to use for a scalar multiplication of the given size.
-         * 
-         * @param bits the bit-length of the scalar to multiply by
-         * @param windowSizeCutoffs a monotonically increasing list of bit sizes at which to increment the window width
-         * @param maxWidth the maximum window width to return 
-         * @return the window size to use
-         */
-        public static int GetWindowSize(int bits, int[] windowSizeCutoffs, int maxWidth)
-        {
             int w = 0;
             for (; w < windowSizeCutoffs.Length; ++w)
             {
@@ -359,33 +320,23 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
                     break;
                 }
             }
-
-            return System.Math.Max(2, System.Math.Min(maxWidth, w + 2));
+            return w + 2;
         }
 
-        [Obsolete]
-        public static ECPoint MapPointWithPrecomp(ECPoint p, int minWidth, bool includeNegated,
+        public static ECPoint MapPointWithPrecomp(ECPoint p, int width, bool includeNegated,
             ECPointMap pointMap)
         {
             ECCurve c = p.Curve;
-            WNafPreCompInfo infoP = Precompute(p, minWidth, includeNegated);
+            WNafPreCompInfo wnafPreCompP = Precompute(p, width, includeNegated);
 
             ECPoint q = pointMap.Map(p);
-            c.Precompute(q, PRECOMP_NAME, new MapPointCallback(infoP, includeNegated, pointMap));
+            c.Precompute(q, PRECOMP_NAME, new MapPointCallback(wnafPreCompP, includeNegated, pointMap));
             return q;
         }
 
-        public static WNafPreCompInfo Precompute(ECPoint p, int minWidth, bool includeNegated)
+        public static WNafPreCompInfo Precompute(ECPoint p, int width, bool includeNegated)
         {
-            return (WNafPreCompInfo)p.Curve.Precompute(p, PRECOMP_NAME,
-                new PrecomputeCallback(p, minWidth, includeNegated));
-        }
-
-        public static WNafPreCompInfo PrecomputeWithPointMap(ECPoint p, ECPointMap pointMap, WNafPreCompInfo fromWNaf,
-            bool includeNegated)
-        {
-            return (WNafPreCompInfo)p.Curve.Precompute(p, PRECOMP_NAME,
-                new PrecomputeWithPointMapCallback(p, pointMap, fromWNaf, includeNegated));
+            return (WNafPreCompInfo)p.Curve.Precompute(p, PRECOMP_NAME, new WNafCallback(p, width, includeNegated));
         }
 
         private static byte[] Trim(byte[] a, int length)
@@ -409,55 +360,16 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
             return result;
         }
 
-        private class ConfigureBasepointCallback
-            : IPreCompCallback
-        {
-            private readonly ECCurve m_curve;
-            private readonly int m_confWidth;
-
-            internal ConfigureBasepointCallback(ECCurve curve, int confWidth)
-            {
-                this.m_curve = curve;
-                this.m_confWidth = confWidth;
-            }
-
-            public PreCompInfo Precompute(PreCompInfo existing)
-            {
-                WNafPreCompInfo existingWNaf = existing as WNafPreCompInfo;
-
-                if (null != existingWNaf && existingWNaf.ConfWidth == m_confWidth)
-                {
-                    existingWNaf.PromotionCountdown = 0;
-                    return existingWNaf;
-                }
-
-                WNafPreCompInfo result = new WNafPreCompInfo();
-
-                result.PromotionCountdown = 0;
-                result.ConfWidth = m_confWidth;
-
-                if (null != existingWNaf)
-                {
-                    result.PreComp = existingWNaf.PreComp;
-                    result.PreCompNeg = existingWNaf.PreCompNeg;
-                    result.Twice = existingWNaf.Twice;
-                    result.Width = existingWNaf.Width;
-                }
-
-                return result;
-            }
-        }
-
         private class MapPointCallback
             : IPreCompCallback
         {
-            private readonly WNafPreCompInfo m_infoP;
+            private readonly WNafPreCompInfo m_wnafPreCompP;
             private readonly bool m_includeNegated;
             private readonly ECPointMap m_pointMap;
 
-            internal MapPointCallback(WNafPreCompInfo infoP, bool includeNegated, ECPointMap pointMap)
+            internal MapPointCallback(WNafPreCompInfo wnafPreCompP, bool includeNegated, ECPointMap pointMap)
             {
-                this.m_infoP = infoP;
+                this.m_wnafPreCompP = wnafPreCompP;
                 this.m_includeNegated = includeNegated;
                 this.m_pointMap = pointMap;
             }
@@ -466,23 +378,20 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
             {
                 WNafPreCompInfo result = new WNafPreCompInfo();
 
-                result.ConfWidth = m_infoP.ConfWidth;
-
-                ECPoint twiceP = m_infoP.Twice;
-                if (null != twiceP)
+                ECPoint twiceP = m_wnafPreCompP.Twice;
+                if (twiceP != null)
                 {
                     ECPoint twiceQ = m_pointMap.Map(twiceP);
                     result.Twice = twiceQ;
                 }
 
-                ECPoint[] preCompP = m_infoP.PreComp;
+                ECPoint[] preCompP = m_wnafPreCompP.PreComp;
                 ECPoint[] preCompQ = new ECPoint[preCompP.Length];
                 for (int i = 0; i < preCompP.Length; ++i)
                 {
                     preCompQ[i] = m_pointMap.Map(preCompP[i]);
                 }
                 result.PreComp = preCompQ;
-                result.Width = m_infoP.Width;
 
                 if (m_includeNegated)
                 {
@@ -498,17 +407,17 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
             }
         }
 
-        private class PrecomputeCallback
+        private class WNafCallback
             : IPreCompCallback
         {
             private readonly ECPoint m_p;
-            private readonly int m_minWidth;
+            private readonly int m_width;
             private readonly bool m_includeNegated;
 
-            internal PrecomputeCallback(ECPoint p, int minWidth, bool includeNegated)
+            internal WNafCallback(ECPoint p, int width, bool includeNegated)
             {
                 this.m_p = p;
-                this.m_minWidth = minWidth;
+                this.m_width = width;
                 this.m_includeNegated = includeNegated;
             }
 
@@ -516,39 +425,24 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
             {
                 WNafPreCompInfo existingWNaf = existing as WNafPreCompInfo;
 
-                int width = System.Math.Max(2, System.Math.Min(MAX_WIDTH, m_minWidth));
-                int reqPreCompLen = 1 << (width - 2);
+                int reqPreCompLen = 1 << System.Math.Max(0, m_width - 2);
 
-                if (CheckExisting(existingWNaf, width, reqPreCompLen, m_includeNegated))
-                {
-                    existingWNaf.DecrementPromotionCountdown();
+                if (CheckExisting(existingWNaf, reqPreCompLen, m_includeNegated))
                     return existingWNaf;
-                }
-
-                WNafPreCompInfo result = new WNafPreCompInfo();
 
                 ECCurve c = m_p.Curve;
                 ECPoint[] preComp = null, preCompNeg = null;
                 ECPoint twiceP = null;
 
-                if (null != existingWNaf)
+                if (existingWNaf != null)
                 {
-                    int promotionCountdown = existingWNaf.DecrementPromotionCountdown();
-                    result.PromotionCountdown = promotionCountdown;
-
-                    int confWidth = existingWNaf.ConfWidth;
-                    result.ConfWidth = confWidth;
-
                     preComp = existingWNaf.PreComp;
                     preCompNeg = existingWNaf.PreCompNeg;
                     twiceP = existingWNaf.Twice;
                 }
 
-                width = System.Math.Min(MAX_WIDTH, System.Math.Max(result.ConfWidth, width));
-                reqPreCompLen = 1 << (width - 2);
-
                 int iniPreCompLen = 0;
-                if (null == preComp)
+                if (preComp == null)
                 {
                     preComp = EMPTY_POINTS;
                 }
@@ -583,7 +477,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
                         else
                         {
                             ECPoint isoTwiceP = twiceP, last = preComp[curPreCompLen - 1];
-                            if (null == isoTwiceP)
+                            if (isoTwiceP == null)
                             {
                                 isoTwiceP = preComp[0].Twice();
                                 twiceP = isoTwiceP;
@@ -643,7 +537,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
                 if (m_includeNegated)
                 {
                     int pos;
-                    if (null == preCompNeg)
+                    if (preCompNeg == null)
                     {
                         pos = 0;
                         preCompNeg = new ECPoint[reqPreCompLen]; 
@@ -664,105 +558,23 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier
                     }
                 }
 
+                WNafPreCompInfo result = new WNafPreCompInfo();
                 result.PreComp = preComp;
                 result.PreCompNeg = preCompNeg;
                 result.Twice = twiceP;
-                result.Width = width;
                 return result;
             }
 
-            private bool CheckExisting(WNafPreCompInfo existingWNaf, int width, int reqPreCompLen, bool includeNegated)
+            private bool CheckExisting(WNafPreCompInfo existingWNaf, int reqPreCompLen, bool includeNegated)
             {
-                return null != existingWNaf
-                    && existingWNaf.Width >= System.Math.Max(existingWNaf.ConfWidth, width) 
+                return existingWNaf != null
                     && CheckTable(existingWNaf.PreComp, reqPreCompLen)
                     && (!includeNegated || CheckTable(existingWNaf.PreCompNeg, reqPreCompLen));
             }
 
             private bool CheckTable(ECPoint[] table, int reqLen)
             {
-                return null != table && table.Length >= reqLen;
-            }
-        }
-
-        private class PrecomputeWithPointMapCallback
-            : IPreCompCallback
-        {
-            private readonly ECPoint m_point;
-            private readonly ECPointMap m_pointMap;
-            private readonly WNafPreCompInfo m_fromWNaf;
-            private readonly bool m_includeNegated;
-
-            internal PrecomputeWithPointMapCallback(ECPoint point, ECPointMap pointMap, WNafPreCompInfo fromWNaf,
-                bool includeNegated)
-            {
-                this.m_point = point;
-                this.m_pointMap = pointMap;
-                this.m_fromWNaf = fromWNaf;
-                this.m_includeNegated = includeNegated;
-            }
-
-            public PreCompInfo Precompute(PreCompInfo existing)
-            {
-                WNafPreCompInfo existingWNaf = existing as WNafPreCompInfo;
-
-                int width = m_fromWNaf.Width;
-                int reqPreCompLen = m_fromWNaf.PreComp.Length;
-
-                if (CheckExisting(existingWNaf, width, reqPreCompLen, m_includeNegated))
-                {
-                    existingWNaf.DecrementPromotionCountdown();
-                    return existingWNaf;
-                }
-
-                /*
-                 * TODO Ideally this method would support incremental calculation, but given the
-                 * existing use-cases it would be of little-to-no benefit.
-                 */
-                WNafPreCompInfo result = new WNafPreCompInfo();
-
-                result.PromotionCountdown = m_fromWNaf.PromotionCountdown;
-
-                ECPoint twiceFrom = m_fromWNaf.Twice;
-                if (null != twiceFrom)
-                {
-                    ECPoint twice = m_pointMap.Map(twiceFrom);
-                    result.Twice = twice;
-                }
-
-                ECPoint[] preCompFrom = m_fromWNaf.PreComp;
-                ECPoint[] preComp = new ECPoint[preCompFrom.Length];
-                for (int i = 0; i < preCompFrom.Length; ++i)
-                {
-                    preComp[i] = m_pointMap.Map(preCompFrom[i]);
-                }
-                result.PreComp = preComp;
-                result.Width = width;
-
-                if (m_includeNegated)
-                {
-                    ECPoint[] preCompNeg = new ECPoint[preComp.Length];
-                    for (int i = 0; i < preCompNeg.Length; ++i)
-                    {
-                        preCompNeg[i] = preComp[i].Negate();
-                    }
-                    result.PreCompNeg = preCompNeg;
-                }
-
-                return result;
-            }
-
-            private bool CheckExisting(WNafPreCompInfo existingWNaf, int width, int reqPreCompLen, bool includeNegated)
-            {
-                return null != existingWNaf
-                    && existingWNaf.Width >= width
-                    && CheckTable(existingWNaf.PreComp, reqPreCompLen)
-                    && (!includeNegated || CheckTable(existingWNaf.PreCompNeg, reqPreCompLen));
-            }
-
-            private bool CheckTable(ECPoint[] table, int reqLen)
-            {
-                return null != table && table.Length >= reqLen;
+                return table != null && table.Length >= reqLen;
             }
         }
     }

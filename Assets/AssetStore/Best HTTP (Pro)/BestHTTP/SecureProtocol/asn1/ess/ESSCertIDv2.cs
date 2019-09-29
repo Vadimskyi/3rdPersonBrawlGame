@@ -135,7 +135,12 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Ess
             }
 
             v.Add(new DerOctetString(certHash).ToAsn1Object());
-            v.AddOptional(issuerSerial);
+
+            if (issuerSerial != null)
+            {
+                v.Add(issuerSerial);
+            }
+
             return new DerSequence(v);
         }
 

@@ -135,7 +135,12 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Icao
 			DerSequence hashSeq = new DerSequence(datagroupHash);
 
 			Asn1EncodableVector v = new Asn1EncodableVector(version, digestAlgorithmIdentifier, hashSeq);
-            v.AddOptional(versionInfo);
+
+			if (versionInfo != null)
+			{
+				v.Add(versionInfo);
+			}
+
 			return new DerSequence(v);
 		}
 	}

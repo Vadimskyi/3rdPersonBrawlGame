@@ -3,7 +3,6 @@
 using System;
 
 using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC;
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Math.EC.Multiplier;
 
 namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
 {
@@ -32,13 +31,11 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Parameters
             if (!parameters.Equals(ephemeralPrivateKey.Parameters))
                 throw new ArgumentException("Static and ephemeral private keys have different domain parameters");
 
-            ECMultiplier m = new FixedPointCombMultiplier();
-
             this.mInitiator = initiator;
             this.mStaticPrivateKey = staticPrivateKey;
-            this.mStaticPublicPoint = m.Multiply(parameters.G, staticPrivateKey.D).Normalize(); 
+            this.mStaticPublicPoint = parameters.G.Multiply(staticPrivateKey.D).Normalize();
             this.mEphemeralPrivateKey = ephemeralPrivateKey;
-            this.mEphemeralPublicPoint = m.Multiply(parameters.G, ephemeralPrivateKey.D).Normalize();
+            this.mEphemeralPublicPoint = parameters.G.Multiply(ephemeralPrivateKey.D).Normalize();
         }
 
         public virtual bool IsInitiator

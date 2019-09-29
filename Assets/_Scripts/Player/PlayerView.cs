@@ -6,10 +6,12 @@ namespace Vadimskyi.Game
 {
     public class PlayerView : MonoBehaviour
     {
-        public PlayerMovement Movement;
-        public Gun Gun;
-        public Health Health;
-        public SpawnProjectiles PSpawn;
-        public MoveProjectiles PMove;
+        public PlayerFacade Facade;
+        public CharacterController Controller;
+        public Animator Animator;
+        public Rigidbody Rigidbody;
+        public Transform FirePoint;
+        public ParticleSystem MuzzleParticle;
+        public AudioSource GunFireSource;
     }
 }

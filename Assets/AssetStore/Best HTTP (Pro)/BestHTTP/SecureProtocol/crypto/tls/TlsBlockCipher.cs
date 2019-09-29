@@ -146,6 +146,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Tls
 
             return plaintextLimit;
         }
+
         byte[] explicitIV = null;
         public virtual byte[] EncodePlaintext(long seqNo, byte type, byte[] plaintext, int offset, int len)
         {

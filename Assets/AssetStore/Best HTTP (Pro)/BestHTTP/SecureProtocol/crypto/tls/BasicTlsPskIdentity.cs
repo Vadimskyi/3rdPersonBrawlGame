@@ -39,7 +39,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Tls
 
         public virtual byte[] GetPsk()
         {
-            return Arrays.Clone(mPsk);
+            return mPsk;
         }
     }
 }

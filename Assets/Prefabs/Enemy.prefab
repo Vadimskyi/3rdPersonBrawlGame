@@ -423,7 +423,6 @@ GameObject:
   m_Component:
   - component: {fileID: 765664230636633143}
   - component: {fileID: 765664230636633148}
-  - component: {fileID: 765664230636633142}
   - component: {fileID: 765664230636633149}
   - component: {fileID: 765664230636633145}
   - component: {fileID: 765664230636633144}
@@ -465,21 +464,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _attackRefreshRate: 1.5
   _attackDamage: 2
---- !u!114 &765664230636633142
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 765664230636633140}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a307ffac460a09e4bbb5f562f5933a5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startingHealth: 10
-  _damageParticle: {fileID: 0}
-  _animator: {fileID: 765664231509235697}
 --- !u!114 &765664230636633149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1504,11 +1488,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 765664230636633143}
     m_Modifications:
-    - target: {fileID: 3620666968977794482, guid: e06ae147c7686f34fb039f7836beb0ee,
-        type: 3}
-      propertyPath: m_Name
-      value: EnemyNpcCharacter
-      objectReference: {fileID: 0}
     - target: {fileID: 3620666968978032150, guid: e06ae147c7686f34fb039f7836beb0ee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1563,6 +1542,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3620666968977794482, guid: e06ae147c7686f34fb039f7836beb0ee,
+        type: 3}
+      propertyPath: m_Name
+      value: EnemyNpcCharacter
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e06ae147c7686f34fb039f7836beb0ee, type: 3}

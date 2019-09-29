@@ -5,86 +5,101 @@ using System.Security.Cryptography;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-
-public class PlayerMovement : MonoBehaviour
+namespace Vadimskyi.Game
 {
-    public event Action<Transform> OnMove = delegate{  };
-
-    [SerializeField]
-    private float _moveSpeed = 250;
-    [SerializeField]
-    private float _turnSpeed = 5;
-
-    private CharacterController _characterController;
-    private Rigidbody _rigidbody;
-    private Animator _animator;
-
-    private Vector3 _movementForce;
-
-    private void Start()
+    public class PlayerMovement
     {
-        _characterController = GetComponent<CharacterController>();
-        _rigidbody = GetComponentInChildren<Rigidbody>();
-        _animator = GetComponentInChildren<Animator>();
-        Debug.Log(transform.position);
-    }
+        public event Action<Transform, Vector3> OnMove = delegate { };
+        public event Action<Quaternion> OnRotate = delegate { };
 
-    /// <summary>
-    /// 3rd person movement
-    /// </summary>
-    private void Update()
-    {
-        ReadInput();
-    }
+        [SerializeField]
+        private float _moveSpeed = 250;
+        [SerializeField]
+        private float _turnSpeed = 5;
 
-    private void FixedUpdate()
-    {
-        ApplyInput();
-    }
+        private CharacterController _characterController;
+        private Rigidbody _rigidbody;
+        private Animator _animator;
+        private Transform transform;
 
-    private void ApplyInput()
-    {
-        //_rigidbody.AddForce(_movementForce * _moveSpeed);
-        _characterController.SimpleMove(_movementForce * Time.deltaTime * _moveSpeed);
-        _animator.SetFloat("moveSpeed", _movementForce.magnitude);
-        if (_movementForce.magnitude > 0)
+        private Vector3 _prevMovementForce;
+        private Vector3 _movementForce;
+
+        public PlayerMovement(
+            Transform target,
+            Animator animator,
+            Rigidbody rigidbody,
+            CharacterController characterController)
         {
-            Quaternion newDirection = Quaternion.LookRotation(_movementForce);
-            transform.rotation = Quaternion.Slerp(transform.rotation, newDirection, Time.deltaTime * _turnSpeed);
+            transform = target;
+            _characterController = characterController;
+            _rigidbody = rigidbody;
+            _animator = animator;
         }
-        OnMove?.Invoke(transform);
-    }
 
-    private void ReadInput()
-    {
+        /// <summary>
+        /// 3rd person movement
+        /// </summary>
+        public void CustomUpdate()
+        {
+            ReadInput();
+        }
+
+        public void CustomFixedUpdate()
+        {
+            if (_movementForce.magnitude.Equals(0) && _movementForce == _prevMovementForce) return;
+
+            OnMove?.Invoke(transform, _movementForce);
+            if (_movementForce.magnitude > 0)
+            {
+                Quaternion newDirection = Quaternion.LookRotation(_movementForce);
+                OnRotate?.Invoke(newDirection);
+            }
+            _prevMovementForce = _movementForce;
+        }
+
+        public void Move(Vector3 movementForce)
+        {
+            _characterController.SimpleMove(movementForce * Time.deltaTime * _moveSpeed);
+            _animator.SetFloat("moveSpeed", movementForce.magnitude);
+        }
+
+        public void Rotate(Quaternion direction)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, direction, Time.deltaTime * _turnSpeed);
+        }
+
+        private void ReadInput()
+        {
 
 #if UNITY_EDITOR
-        var horizontal = Input.GetAxis("Horizontal");
-        var vertical = Input.GetAxis("Vertical");
+            var horizontal = Input.GetAxis("Horizontal");
+            var vertical = Input.GetAxis("Vertical");
 #else
         var horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
         var vertical = CrossPlatformInputManager.GetAxis("Vertical");
 #endif
-        _movementForce = new Vector3(horizontal, 0, vertical);
-    }
+            _movementForce = new Vector3(horizontal, 0, vertical);
+        }
 
-    /// <summary>
-    /// first person movement
-    /// </summary>
-    private void Update_shooter()
-    {
-        var horizontal = Input.GetAxis("Horizontal");
-        var vertical = Input.GetAxis("Vertical");
-
-        var movement = new Vector3(horizontal, 0, vertical);
-
-        _animator.SetFloat("speed", vertical);
-
-        transform.Rotate(Vector3.up, horizontal * _turnSpeed * Time.deltaTime);
-
-        if (!vertical.Equals(0))
+        /// <summary>
+        /// first person movement
+        /// </summary>
+        private void Update_shooter()
         {
-            _characterController.SimpleMove(transform.forward * _moveSpeed * vertical);
+            var horizontal = Input.GetAxis("Horizontal");
+            var vertical = Input.GetAxis("Vertical");
+
+            var movement = new Vector3(horizontal, 0, vertical);
+
+            _animator.SetFloat("speed", vertical);
+
+            transform.Rotate(Vector3.up, horizontal * _turnSpeed * Time.deltaTime);
+
+            if (!vertical.Equals(0))
+            {
+                _characterController.SimpleMove(transform.forward * _moveSpeed * vertical);
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
         {
             if (explicitly)
             {
-                return GetInstance(obj.GetObject());
+                return (Asn1TaggedObject) obj.GetObject();
             }
 
             throw new ArgumentException("implicitly tagged tagged object");

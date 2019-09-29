@@ -101,9 +101,6 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Signers
 
             internal bool VerifySignature(Ed25519PublicKeyParameters publicKey, byte[] signature)
             {
-                if (Ed25519.SignatureSize != signature.Length)
-                    return false;
-
                 lock (this)
                 {
 #if PORTABLE || NETFX_CORE

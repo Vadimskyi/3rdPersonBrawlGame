@@ -115,7 +115,7 @@ namespace BestHTTP.SignalRCore.Transports
             // https://github.com/aspnet/SignalR/blob/dev/specs/HubProtocol.md#overview
             // When our websocket connection is open, send the 'negotiation' message to the server.
 
-            string json = string.Format("{{\"protocol\":\"{0}\", \"version\": 1}}", this.connection.Protocol.Encoder.Name);
+            string json = string.Format("{{'protocol':'{0}', 'version': 1}}", this.connection.Protocol.Encoder.Name);
 
             byte[] buffer = JsonProtocol.WithSeparator(json);
 
@@ -203,15 +203,8 @@ namespace BestHTTP.SignalRCore.Transports
         {
             HTTPManager.Logger.Verbose("WebSocketTransport", "OnError: " + reason);
 
-            if (this.State == TransportStates.Closing)
-            {
-                this.State = TransportStates.Closed;
-            }
-            else
-            {
-                this.ErrorReason = reason;
-                this.State = TransportStates.Failed;
-            }
+            this.ErrorReason = reason;
+            this.State = TransportStates.Failed;
         }
 
         private void OnClosed(WebSocket.WebSocket webSocket, ushort code, string message)

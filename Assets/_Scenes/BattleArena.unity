@@ -43059,18 +43059,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300000, guid: 5508321447dce6a4da3a291372934e34, type: 3}
---- !u!114 &1236303550 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3785261806599978948, guid: 815652d24dec29c41890ba3aa22c0a93,
-    type: 3}
-  m_PrefabInstance: {fileID: 8478485245810274402}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d6fc2bf17670c545845db930766002c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1237605277
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -68177,6 +68165,8 @@ GameObject:
   - component: {fileID: 1912456733}
   - component: {fileID: 1912456735}
   - component: {fileID: 1912456734}
+  - component: {fileID: 1912456737}
+  - component: {fileID: 1912456736}
   m_Layer: 0
   m_Name: GamePlane
   m_TagString: Untagged
@@ -68213,9 +68203,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db6d9002c4fd2be4687155d326289071, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerPrefab: {fileID: 1236303550}
+  _playerPrefab: {fileID: 346826351217481856, guid: 815652d24dec29c41890ba3aa22c0a93,
+    type: 3}
   _initialPlayerPos: {x: 30.4, y: 3.6, z: -11.9}
   _cameraToFolow: {fileID: 699360756}
+  _canvas: {fileID: 271991444}
 --- !u!114 &1912456735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68228,6 +68220,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb49df5b2bb5b6745b486701c7ad28eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1912456736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912456732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e932323587ccb8b478da973b5aaca6c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 20
+  _range: 15
+--- !u!114 &1912456737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912456732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1519c827fd68c0b4ab91bf1d63d1fcbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _projectile: {fileID: 1308558407}
 --- !u!1 &1912740141 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1784946921783176, guid: da069710315859f45b006a49bab26fe9,
@@ -76299,11 +76318,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 8478485244839046201, guid: 815652d24dec29c41890ba3aa22c0a93,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8478485244839046206, guid: 815652d24dec29c41890ba3aa22c0a93,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -76358,14 +76372,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 971824221, guid: 815652d24dec29c41890ba3aa22c0a93, type: 3}
-      propertyPath: _projectile
-      value: 
-      objectReference: {fileID: 1308558407}
-    - target: {fileID: 971824227, guid: 815652d24dec29c41890ba3aa22c0a93, type: 3}
-      propertyPath: _range
-      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 815652d24dec29c41890ba3aa22c0a93, type: 3}

@@ -7,41 +7,47 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1
 	{
 		public static new readonly BerSequence Empty = new BerSequence();
 
-		public static new BerSequence FromVector(Asn1EncodableVector elementVector)
+		public static new BerSequence FromVector(
+			Asn1EncodableVector v)
 		{
-            return elementVector.Count < 1 ? Empty : new BerSequence(elementVector);
+			return v.Count < 1 ? Empty : new BerSequence(v);
 		}
 
 		/**
 		 * create an empty sequence
 		 */
 		public BerSequence()
-            : base()
 		{
 		}
 
 		/**
 		 * create a sequence containing one object
 		 */
-		public BerSequence(Asn1Encodable element)
-            : base(element)
+		public BerSequence(
+			Asn1Encodable obj)
+			: base(obj)
 		{
 		}
 
-		public BerSequence(params Asn1Encodable[] elements)
-            : base(elements)
+		public BerSequence(
+			params Asn1Encodable[] v)
+			: base(v)
 		{
 		}
 
 		/**
 		 * create a sequence containing a vector of objects.
 		 */
-		public BerSequence(Asn1EncodableVector elementVector)
-            : base(elementVector)
+		public BerSequence(
+			Asn1EncodableVector v)
+			: base(v)
 		{
 		}
 
-        internal override void Encode(DerOutputStream derOut)
+		/*
+		 */
+		internal override void Encode(
+			DerOutputStream derOut)
 		{
 			if (derOut is Asn1OutputStream || derOut is BerOutputStream)
 			{

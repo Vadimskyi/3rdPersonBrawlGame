@@ -4,18 +4,22 @@ using System.Collections.Generic;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.AI;
+using Vadimskyi.Game;
 
-public class AggroDetection : MonoBehaviour
+namespace Vadimskyi.Game
 {
-    public event Action<Transform> OnAggro = delegate {  };
-
-    private void OnTriggerEnter(Collider other)
+    public class AggroDetection : MonoBehaviour
     {
-        var player = other.GetComponent<PlayerMovement>();
-        if(player != null)
+        public event Action<Transform> OnAggro = delegate { };
+
+        private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Aggro!");
-            OnAggro(player.transform);
+            var player = other.GetComponent<PlayerMovement>();
+            if (player != null)
+            {
+                Debug.Log("Aggro!");
+                //OnAggro(player.transform);
+            }
         }
     }
 }

@@ -153,7 +153,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Pkix
             {
                 return FindTrustAnchor(cert, trustAnchors) != null;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }

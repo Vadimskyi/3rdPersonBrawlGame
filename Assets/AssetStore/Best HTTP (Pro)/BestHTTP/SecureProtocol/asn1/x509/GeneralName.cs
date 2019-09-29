@@ -172,25 +172,24 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509
 
 				switch (tag)
 				{
-                    case EdiPartyName:
-                    case OtherName:
-                    case X400Address:
-                        return new GeneralName(tag, Asn1Sequence.GetInstance(tagObj, false));
-
-                    case DnsName:
-                    case Rfc822Name:
-                    case UniformResourceIdentifier:
-                        return new GeneralName(tag, DerIA5String.GetInstance(tagObj, false));
-
+					case OtherName:
+						return new GeneralName(tag, Asn1Sequence.GetInstance(tagObj, false));
+					case Rfc822Name:
+						return new GeneralName(tag, DerIA5String.GetInstance(tagObj, false));
+					case DnsName:
+						return new GeneralName(tag, DerIA5String.GetInstance(tagObj, false));
+					case X400Address:
+						throw new ArgumentException("unknown tag: " + tag);
 					case DirectoryName:
 						return new GeneralName(tag, X509Name.GetInstance(tagObj, true));
+					case EdiPartyName:
+						return new GeneralName(tag, Asn1Sequence.GetInstance(tagObj, false));
+					case UniformResourceIdentifier:
+						return new GeneralName(tag, DerIA5String.GetInstance(tagObj, false));
 					case IPAddress:
 						return new GeneralName(tag, Asn1OctetString.GetInstance(tagObj, false));
 					case RegisteredID:
 						return new GeneralName(tag, DerObjectIdentifier.GetInstance(tagObj, false));
-
-                    default:
-                        throw new ArgumentException("unknown tag: " + tag);
 				}
 	        }
 
@@ -415,10 +414,8 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509
 
 		public override Asn1Object ToAsn1Object()
         {
-            // directoryName is explicitly tagged as it is a CHOICE
-            bool isExplicit = (tag == DirectoryName);
-
-            return new DerTaggedObject(isExplicit, tag, obj);
+			// Explicitly tagged if DirectoryName
+			return new DerTaggedObject(tag == DirectoryName, tag, obj);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X9
 
 		public static DHValidationParms GetInstance(object obj)
 		{
-			if (obj == null || obj is DHValidationParms)
+			if (obj == null || obj is DHDomainParameters)
 				return (DHValidationParms)obj;
 
 			if (obj is Asn1Sequence)

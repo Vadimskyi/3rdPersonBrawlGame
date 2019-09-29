@@ -198,16 +198,20 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.IsisMtt.X509
 		*/
 		public override Asn1Object ToAsn1Object()
 		{
-			Asn1EncodableVector v = new Asn1EncodableVector();
-            v.AddOptional(namingAuthorityID);
-
+			Asn1EncodableVector vec = new Asn1EncodableVector();
+			if (namingAuthorityID != null)
+			{
+				vec.Add(namingAuthorityID);
+			}
 			if (namingAuthorityUrl != null)
 			{
-				v.Add(new DerIA5String(namingAuthorityUrl, true));
+				vec.Add(new DerIA5String(namingAuthorityUrl, true));
 			}
-
-            v.AddOptional(namingAuthorityText);
-			return new DerSequence(v);
+			if (namingAuthorityText != null)
+			{
+				vec.Add(namingAuthorityText);
+			}
+			return new DerSequence(vec);
 		}
 	}
 }

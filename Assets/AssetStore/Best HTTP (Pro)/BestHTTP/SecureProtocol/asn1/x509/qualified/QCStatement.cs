@@ -71,11 +71,16 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.X509.Qualified
 			get { return qcStatementInfo; }
 		}
 
-        public override Asn1Object ToAsn1Object()
+		public override Asn1Object ToAsn1Object()
         {
-            Asn1EncodableVector v = new Asn1EncodableVector(qcStatementId);
-            v.AddOptional(qcStatementInfo);
-            return new DerSequence(v);
+            Asn1EncodableVector seq = new Asn1EncodableVector(qcStatementId);
+
+			if (qcStatementInfo != null)
+            {
+                seq.Add(qcStatementInfo);
+            }
+
+			return new DerSequence(seq);
         }
     }
 }

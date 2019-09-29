@@ -177,20 +177,31 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.Cms
 	    public override Asn1Object ToAsn1Object()
 		{
 			Asn1EncodableVector v = new Asn1EncodableVector(version);
-            v.AddOptionalTagged(false, 0, originatorInfo);
+
+			if (originatorInfo != null)
+			{
+				v.Add(new DerTaggedObject(false, 0, originatorInfo));
+			}
+
 			v.Add(recipientInfos, authEncryptedContentInfo);
 
 			// "authAttrs optionally contains the authenticated attributes."
-            // "AuthAttributes MUST be DER encoded, even if the rest of the
-            // AuthEnvelopedData structure is BER encoded."
-            v.AddOptionalTagged(false, 1, authAttrs);
+			if (authAttrs != null)
+			{
+				// "AuthAttributes MUST be DER encoded, even if the rest of the
+				// AuthEnvelopedData structure is BER encoded."
+				v.Add(new DerTaggedObject(false, 1, authAttrs));
+			}
 
-            v.Add(mac);
+			v.Add(mac);
 
-            // "unauthAttrs optionally contains the unauthenticated attributes."
-            v.AddOptionalTagged(false, 2, unauthAttrs);
+			// "unauthAttrs optionally contains the unauthenticated attributes."
+			if (unauthAttrs != null)
+			{
+				v.Add(new DerTaggedObject(false, 2, unauthAttrs));
+			}
 
-            return new BerSequence(v);
+			return new BerSequence(v);
 		}
 	}
 }

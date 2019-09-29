@@ -7,11 +7,12 @@ namespace Vadimskyi.Game
 {
     public static class NetworkEvents
     {
-        public static Action<string> onJoinGame;
-        public static Action<User> onUserDataReceived;
-        public static Action<User[]> onCombatRoomDataReceived;
+        public static event Action<string> onJoinGame = delegate { };
+        public static event Action<User> onUserDataReceived = delegate { };
+        public static event Action<User[]> onCombatRoomDataReceived = delegate { };
 
-        public static Action<string> onCharacterMoved;
+        public static event Action<UserMovement> onCharacterMoved = delegate { };
+        public static event Action<UserRotation> onCharacterRotated = delegate { };
         public static Action<string> onUserLeftChat;
         public static Action<string> onCharacterHit;
         public static Action<string> onCharacterShoot;
@@ -19,6 +20,16 @@ namespace Vadimskyi.Game
         internal static void JoinGame(string username)
         {
             onJoinGame?.Invoke(username);
+        }
+
+        internal static void CharacterMoved(UserMovement direction)
+        {
+            onCharacterMoved?.Invoke(direction);
+        }
+
+        internal static void CharacterRotated(UserRotation angle)
+        {
+            onCharacterRotated?.Invoke(angle);
         }
 
         internal static void UserDataReceived(User user)

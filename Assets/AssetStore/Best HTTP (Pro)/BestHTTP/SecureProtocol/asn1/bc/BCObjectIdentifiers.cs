@@ -7,20 +7,23 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.BC
 	public abstract class BCObjectIdentifiers
 	{
         /**
-         * iso.org.dod.internet.private.enterprise.legion-of-the-bouncy-castle
-         * <p>1.3.6.1.4.1.22554</p>
+         *  iso.org.dod.internet.private.enterprise.legion-of-the-bouncy-castle
+         *<p>
+         *  1.3.6.1.4.1.22554
          */
         public static readonly DerObjectIdentifier bc = new DerObjectIdentifier("1.3.6.1.4.1.22554");
 
         /**
          * pbe(1) algorithms
-         * <p>1.3.6.1.4.1.22554.1</p>
+         * <p>
+         * 1.3.6.1.4.1.22554.1
          */
         public static readonly DerObjectIdentifier bc_pbe        = bc.Branch("1");
 
         /**
          * SHA-1(1)
-         * <p>1.3.6.1.4.1.22554.1.1</p>
+         * <p>
+         * 1.3.6.1.4.1.22554.1.1
          */
         public static readonly DerObjectIdentifier bc_pbe_sha1   = bc_pbe.Branch("1");
 
@@ -103,15 +106,6 @@ namespace BestHTTP.SecureProtocol.Org.BouncyCastle.Asn1.BC
          * NewHope
          */
         public static readonly DerObjectIdentifier newHope = bc_exch.Branch("1");
-
-        /**
-         * X.509 extension(4) values
-         * <p>
-         * 1.3.6.1.4.1.22554.4
-         */
-        public static readonly DerObjectIdentifier bc_ext = bc.Branch("4");
-
-        public static readonly DerObjectIdentifier linkedCertificate = bc_ext.Branch("1");
 	}
 }
 #pragma warning restore

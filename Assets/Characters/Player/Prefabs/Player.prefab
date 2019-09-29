@@ -9,22 +9,16 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8478485244839046206}
-  - component: {fileID: 3785261806599978948}
   - component: {fileID: 346826351217481856}
   - component: {fileID: 8478485244839046207}
-  - component: {fileID: 8478485244839046204}
-  - component: {fileID: 8478485244839046205}
-  - component: {fileID: 8478485244839046147}
   - component: {fileID: 8478485244839046146}
-  - component: {fileID: 971824221}
-  - component: {fileID: 971824227}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8478485244839046206
 Transform:
   m_ObjectHideFlags: 0
@@ -40,19 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
---- !u!114 &3785261806599978948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478485244839046201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d6fc2bf17670c545845db930766002c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _view: {fileID: 346826351217481856}
 --- !u!114 &346826351217481856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,11 +46,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c7520527a7a74143b3f05d812101821, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Movement: {fileID: 8478485244839046204}
-  Gun: {fileID: 8478485244839046205}
-  Health: {fileID: 8478485244839046147}
-  PSpawn: {fileID: 971824221}
-  PMove: {fileID: 971824227}
+  Controller: {fileID: 8478485244839046207}
+  PlayerHealth: {fileID: 0}
+  Animator: {fileID: 8478485245280036267}
+  Rigidbody: {fileID: 8478485245289451726}
+  FirePoint: {fileID: 8478485245323166032}
+  MuzzleParticle: {fileID: 8604659793085456822}
+  GunFireSource: {fileID: 8478485244839046146}
 --- !u!143 &8478485244839046207
 CharacterController:
   m_ObjectHideFlags: 0
@@ -88,52 +71,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 2, z: 0}
---- !u!114 &8478485244839046204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478485244839046201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed9700bb2b0a2e44ea96545cc5486818, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _moveSpeed: 250
-  _turnSpeed: 5
---- !u!114 &8478485244839046205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478485244839046201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7edfb0b093d52784787231b64247c9af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _fireRate: 0.5
-  _damage: 5
-  _firePoint: {fileID: 8478485245323166032}
-  _muzzleParticle: {fileID: 8604659793085456822}
-  _gunFireSource: {fileID: 8478485244839046146}
---- !u!114 &8478485244839046147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478485244839046201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a307ffac460a09e4bbb5f562f5933a5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startingHealth: 10
-  _damageParticle: {fileID: 0}
-  _animator: {fileID: 8478485245280036267}
 --- !u!82 &8478485244839046146
 AudioSource:
   m_ObjectHideFlags: 0
@@ -230,34 +167,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &971824221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478485244839046201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1519c827fd68c0b4ab91bf1d63d1fcbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _spawnPoint: {fileID: 8478485245323166032}
-  _projectile: {fileID: 0}
---- !u!114 &971824227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8478485244839046201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e932323587ccb8b478da973b5aaca6c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 20
-  _range: 0
 --- !u!1 &8478485245289551361
 GameObject:
   m_ObjectHideFlags: 0
@@ -1292,21 +1201,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MuzzleFlash01
       objectReference: {fileID: 0}
-    - target: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
-        type: 3}
-      propertyPath: looping
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
-        type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
-        type: 3}
-      propertyPath: UVModule.flipV
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4300533007854612, guid: ad2ab49d0a2a17148bd51c93d977bdbc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1351,6 +1245,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
+        type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
+        type: 3}
+      propertyPath: UVModule.flipV
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 199409127382122440, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
         type: 3}
       propertyPath: m_Flip.y
@@ -1383,15 +1292,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad2ab49d0a2a17148bd51c93d977bdbc, type: 3}
---- !u!4 &8477716405252083960 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4300533007854612, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
-    type: 3}
-  m_PrefabInstance: {fileID: 8478485243828534508}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &8604659793085456822 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
+    type: 3}
+  m_PrefabInstance: {fileID: 8478485243828534508}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8477716405252083960 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4300533007854612, guid: ad2ab49d0a2a17148bd51c93d977bdbc,
     type: 3}
   m_PrefabInstance: {fileID: 8478485243828534508}
   m_PrefabAsset: {fileID: 0}

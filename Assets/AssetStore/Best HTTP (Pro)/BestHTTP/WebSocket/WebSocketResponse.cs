@@ -111,8 +111,6 @@ namespace BestHTTP.WebSocket
         /// </summary>
         private CircularBuffer<int> rtts = new CircularBuffer<int>(WebSocketResponse.RTTBufferCapacity);
 
-        private int closedThreadCount = 0;
-
         #endregion
 
         internal WebSocketResponse(HTTPRequest request, Stream stream, bool isStreamed, bool isFromCache)
@@ -359,7 +357,7 @@ namespace BestHTTP.WebSocket
                         try
                         {
                             //if (HTTPManager.Logger.Level <= Logger.Loglevels.All)
-                            //    HTTPManager.Logger.Information("WebSocketResponse", "SendThread - Wait is over, about " + this.unsentFrames.Count.ToString() + " new frames!");
+                            //    HTTPManager.Logger.Information("WebSocketResponse", "SendThread - Wait is over, " + localFrames.Count.ToString() + " new frames!");
 
                             WebSocketFrame frame;
                             while (this.unsentFrames.TryDequeue(out frame))
@@ -367,7 +365,7 @@ namespace BestHTTP.WebSocket
                                 if (!closeSent)
                                 {
                                     using (var rawData = frame.Get())
-                                        bufferedStream.Write(rawData.Data, 0, rawData.Length);
+                                        Stream.Write(rawData.Data, 0, rawData.Length);
 
                                     VariableSizedBufferPool.Release(frame.Data);
 
@@ -378,7 +376,7 @@ namespace BestHTTP.WebSocket
                                 Interlocked.Add(ref this._bufferedAmount, -frame.DataLength);
                             }
 
-                            bufferedStream.Flush();
+                            Stream.Flush();
                         }
                         catch (Exception ex)
                         {
@@ -398,12 +396,8 @@ namespace BestHTTP.WebSocket
             finally
             {
                 sendThreadCreated = false;
-
-                if (Interlocked.Increment(ref this.closedThreadCount) == 2)
-                {
-                    (newFrameSignal as IDisposable).Dispose();
-                    newFrameSignal = null;
-                }
+                (newFrameSignal as IDisposable).Dispose();
+                newFrameSignal = null;
 
                 HTTPManager.Logger.Information("WebSocketResponse", "SendThread - Closed!");
             }
@@ -537,12 +531,6 @@ namespace BestHTTP.WebSocket
             }
             finally
             {
-                if (Interlocked.Increment(ref this.closedThreadCount) == 2)
-                {
-                    (newFrameSignal as IDisposable).Dispose();
-                    newFrameSignal = null;
-                }
-
                 HTTPManager.Heartbeats.Unsubscribe(this);
                 HTTPUpdateDelegator.OnApplicationForegroundStateChanged -= OnApplicationForegroundStateChanged;
 
