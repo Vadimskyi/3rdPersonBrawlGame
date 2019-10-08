@@ -31,6 +31,7 @@ namespace Vadimskyi.Game
             _spawnProjectiles = GetComponent<SpawnProjectiles>();
             _activePlayers = new Dictionary<int, PlayerFacade>();
             CombatRoomData.Instance.Users.ForEach(CreatePlayer);
+            CombatRoomData.Instance.OnNewUserJoined += CreatePlayer;
             GameEvents.onCharacterMoved += GameEvents_onCharacterMoved;
             GameEvents.onCharacterRotated += GameEvents_onCharacterRotated; ;
         }

@@ -13,7 +13,7 @@ namespace Vadimskyi.Game
         public event Action<Quaternion> OnRotate = delegate { };
 
         [SerializeField]
-        private float _moveSpeed = 250;
+        private float _moveSpeed = 5;
         [SerializeField]
         private float _turnSpeed = 5;
 
@@ -60,13 +60,14 @@ namespace Vadimskyi.Game
 
         public void Move(Vector3 movementForce)
         {
-            _characterController.SimpleMove(movementForce * Time.deltaTime * _moveSpeed);
+            transform.position += movementForce * Time.fixedDeltaTime * _moveSpeed;
+            //_characterController.SimpleMove(movementForce * Time.fixedDeltaTime * _moveSpeed);
             _animator.SetFloat("moveSpeed", movementForce.magnitude);
         }
 
         public void Rotate(Quaternion direction)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, direction, Time.deltaTime * _turnSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, direction, Time.fixedDeltaTime * _turnSpeed);
         }
 
         private void ReadInput()
@@ -76,9 +77,18 @@ namespace Vadimskyi.Game
             var horizontal = Input.GetAxis("Horizontal");
             var vertical = Input.GetAxis("Vertical");
 #else
-        var horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-        var vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            var horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+            var vertical = CrossPlatformInputManager.GetAxis("Vertical");
 #endif
+            //horizontal = horizontal > 0 ? 1 : horizontal < 0 ? -1 : 0;
+            //vertical = vertical > 0 ? 1 : vertical < 0 ? -1 : 0;
+
+            if (!horizontal.Equals(0) && !vertical.Equals(0))
+            {
+                horizontal = horizontal * 0.7f;
+                vertical = vertical * 0.7f;
+            }
+
             _movementForce = new Vector3(horizontal, 0, vertical);
         }
 
@@ -94,7 +104,7 @@ namespace Vadimskyi.Game
 
             _animator.SetFloat("speed", vertical);
 
-            transform.Rotate(Vector3.up, horizontal * _turnSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.up, horizontal * _turnSpeed * Time.fixedDeltaTime);
 
             if (!vertical.Equals(0))
             {

@@ -64,6 +64,11 @@ namespace Vadimskyi.Game
             //NetworkEvents.CombatRoomDataReceived();
         }
 
+        private void NewUserJoined(Socket socket, Packet packet, params object[] args)
+        {
+            CombatRoomData.Instance.AddUser(JsonConvert.DeserializeObject<User>(args[0].ToString()));
+        }
+
         private void OnCharacterMoved(Socket socket, Packet packet, params object[] args)
         {
             GameEvents.CharacterMoved(JsonConvert.DeserializeObject<UserMovement>(args[0].ToString()));
@@ -72,11 +77,6 @@ namespace Vadimskyi.Game
         private void OnCharacterRotated(Socket socket, Packet packet, params object[] args)
         {
             GameEvents.CharacterRotated(JsonConvert.DeserializeObject<UserRotation>(args[0].ToString()));
-        }
-
-        private void NewUserJoined(Socket socket, Packet packet, params object[] args)
-        {
-
         }
 
         private void OnSpawnCharacter(Socket socket, Packet packet, params object[] args)

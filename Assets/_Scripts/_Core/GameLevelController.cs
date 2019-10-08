@@ -19,6 +19,7 @@ namespace Vadimskyi.Game
 
         private void Awake()
         {
+            Application.targetFrameRate = 30;
             _loader = GetComponentInChildren<LevelLoader>(true);
         }
 

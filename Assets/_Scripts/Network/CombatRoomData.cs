@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ namespace Vadimskyi.Game
 {
     public class CombatRoomData
     {
+        public event Action<User> OnNewUserJoined = delegate {  }; 
         public bool IsInitialized { get; set; }
         public List<User> Users => _users;
 
@@ -17,6 +19,12 @@ namespace Vadimskyi.Game
         {
             _users = users;
             IsInitialized = true;
+        }
+
+        public void AddUser(User user)
+        {
+            _users?.Add(user);
+            OnNewUserJoined?.Invoke(user);
         }
 
         private List<User> _users;
