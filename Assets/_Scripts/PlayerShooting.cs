@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
@@ -10,16 +11,8 @@ namespace Vadimskyi.Game
     {
         public event Action OnFire = delegate { };
 
-        [SerializeField]
-        [Range(0.1f, 1.5f)]
-        private float _fireRate = 0.5f;
-
-        [SerializeField]
-        [Range(1, 10)]
-        private int _damage = 3;
-
-
         private float _timer;
+        private User _user;
         private Animator _animator;
         private Transform _firePoint;
         private AudioSource _gunFireSource;
@@ -28,6 +21,7 @@ namespace Vadimskyi.Game
         private SpawnProjectiles _projectileSpawner;
 
         public PlayerShooting(
+            User user,
             Animator animator,
             Transform firePoint,
             AudioSource gunFireSource,
@@ -35,6 +29,7 @@ namespace Vadimskyi.Game
             MoveProjectiles projectileMover,
             SpawnProjectiles projectileSpawner)
         {
+            _user = user;
             _animator = animator;
             _firePoint = firePoint;
             _gunFireSource = gunFireSource;
@@ -47,14 +42,10 @@ namespace Vadimskyi.Game
         {
             _timer += Time.deltaTime;
 
-#if UNITY_EDITOR
-            var horizontal = Input.GetAxis("Horizontal");
-            var vertical = Input.GetAxis("Vertical");
-#else
-            var horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            var vertical = CrossPlatformInputManager.GetAxis("Vertical");
-#endif
-            if (_timer >= _fireRate
+
+            if (_user.Character.IsDead) return;
+
+            if (_timer >= 0.5f
 #if UNITY_EDITOR
             && Input.GetButton("Fire1"))
 #else
@@ -64,39 +55,45 @@ namespace Vadimskyi.Game
                 _timer = 0;
                 OnFire?.Invoke();
             }
-            else
-            {
-                _animator.SetBool("shooting", false);
-            }
         }
 
-        public void FireGun()
+        //TODO: sync bullet spawn point!
+        public void FireGun(UserShot data)
         {
-            Debug.DrawRay(_firePoint.position, _firePoint.forward * 100, Color.red, 200f, false);
-            if (!_firePoint) return;
-            if (_muzzleParticle)
-                _muzzleParticle.Play();
+            Debug.DrawRay(data.From, data.Direction * 100, Color.red, 200f, false);
+
             _gunFireSource.Play();
             _animator.SetBool("shooting", true);
-
-            var bullet = _projectileSpawner.SpawnProjectile(_firePoint);
+            Observable.Timer(TimeSpan.FromMilliseconds(200)).Subscribe(_ =>
+            {
+                _animator.SetBool("shooting", false);
+            });   
+            
+            var bullet = _projectileSpawner.SpawnProjectile(_firePoint.position, _firePoint.forward);
+            bullet.transform.position = _firePoint.position;
             _projectileMover.MoveProjectile(bullet, _firePoint.forward);
-            TraceProjectile(bullet);
+            TraceProjectile(bullet, data);
+
+            if (_muzzleParticle)
+                _muzzleParticle.Play();
         }
 
-        private void TraceProjectile(GameObject projectile)
+        private void TraceProjectile(GameObject projectile, UserShot data)
         {
+            if (!data.UserId.Equals(UserData.Instance.User.Id)) return;
             var com = projectile.GetComponentInChildren<GunProjectile>();
             if (com != null)
             {
                 com.OnHit += target =>
                 {
-                    target?.GetComponent<PlayerView>()?.Facade.Health.TakeDamage(_damage);
+                    var view = target?.transform.GetComponent<PlayerView>();
+                    var facade = view?.Facade;
+                    facade?.Health.SendDamageTakenEvent((int)_user.Character.Damage, facade.User);
                 };
             }
         }
 
-        private void FireGun_firstPerson()
+        /*private void FireGun_firstPerson()
         {
             if (!_firePoint) return;
             if (_muzzleParticle)
@@ -110,6 +107,6 @@ namespace Vadimskyi.Game
             {
                 hitInfo.collider.GetComponent<PlayerView>()?.Facade.Health.TakeDamage(_damage);
             }
-        }
+        }*/
     }
 }

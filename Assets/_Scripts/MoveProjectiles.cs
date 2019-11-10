@@ -13,13 +13,16 @@ public class MoveProjectiles : MonoBehaviour
     public void MoveProjectile(GameObject projectile, Vector3 direction)
     {
         Vector3 distance = Vector3.zero;
-        Observable.EveryFixedUpdate().Subscribe(_ =>
-        {
-            distance += direction * (_speed * Time.deltaTime);
-            projectile.transform.position += direction * (_speed * Time.deltaTime);
+        Observable.EveryFixedUpdate().Subscribe(_ => { UpdateProjectilePos(ref distance, projectile, direction); }).AddTo(projectile);
+        UpdateProjectilePos(ref distance, projectile, direction);
+    }
 
-            if(distance.magnitude >= _range)
-                Destroy(projectile);
-        }).AddTo(projectile);
+    private void UpdateProjectilePos(ref Vector3 distance, GameObject projectile, Vector3 direction)
+    {
+        distance += direction * (_speed * Time.fixedDeltaTime);
+        projectile.transform.position += direction * (_speed * Time.fixedDeltaTime);
+
+        if (Mathf.Abs(distance.magnitude) >= _range)
+            Destroy(projectile);
     }
 }

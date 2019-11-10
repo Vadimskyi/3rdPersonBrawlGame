@@ -7,10 +7,10 @@ public class SpawnProjectiles : MonoBehaviour
     [SerializeField]
     private GameObject _projectile;
 
-    public GameObject SpawnProjectile(Transform spawnPoint)
+    public GameObject SpawnProjectile(Vector3 pos, Vector3 direction)
     {
-        var projectile = Instantiate(_projectile, spawnPoint.position, Quaternion.identity);
-        projectile.transform.rotation = Quaternion.LookRotation(spawnPoint.forward);
+        var projectile = Instantiate(_projectile, pos, Quaternion.identity);
+        projectile.transform.rotation = Quaternion.LookRotation(direction);
         projectile.SetActive(true);
         return projectile;
     }

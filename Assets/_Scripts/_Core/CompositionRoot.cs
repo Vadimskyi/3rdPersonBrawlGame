@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
 namespace Vadimskyi.Game
 {
     public class CompositionRoot : MonoBehaviour
     {
+        [SerializeField]
+        private GameSettings _gameSettings;
+
         private GameController _gameController;
         private GameStateFactory _gameStateFactory;
         private NetworkController _networkController;
@@ -15,21 +19,24 @@ namespace Vadimskyi.Game
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
+            Application.runInBackground = true;
             _gameLevelController = GetComponent<GameLevelController>();
             InstallControllers();
         }
 
         private void InstallControllers()
         {
+            CompositionRoot.GlobalSettings = _gameSettings;
             //Initialize Dependencies
             _gameStateFactory = new GameStateFactory();
             _gameStateController = new GameStateController(_gameStateFactory);
             _gameStateController.SetState(GameStateType.Enter);
-            _networkController = new NetworkController(_gameStateController);
-
-
+            _networkController = new NetworkController(_gameStateController, _gameSettings);
+            
             //Start Game
             _gameController = new GameController(_gameLevelController, _gameStateController);
         }
+
+        public static GameSettings GlobalSettings { get; private set; }
     }
 }

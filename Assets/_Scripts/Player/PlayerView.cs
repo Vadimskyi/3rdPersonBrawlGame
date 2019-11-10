@@ -13,5 +13,6 @@ namespace Vadimskyi.Game
         public Transform FirePoint;
         public ParticleSystem MuzzleParticle;
         public AudioSource GunFireSource;
+        public Collider KickCollider;
     }
 }

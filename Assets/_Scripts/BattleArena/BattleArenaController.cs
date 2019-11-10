@@ -1,18 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Vadimskyi.Utils;
 
-public class BattleArenaController : MonoBehaviour
+namespace Vadimskyi.Game
 {
-    // Start is called before the first frame update
-    void Start()
+    public class BattleArenaController : MonoBehaviour
     {
-        
-    }
+        private List<TrapAnimation> _trapList;
+        private void Awake()
+        {
+            _trapList = GetComponentsInChildren<TrapAnimation>().ToList();
+            GameEvents.onLaunchSpikeTraps += GameEvents_onLaunchSpikeTraps;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void GameEvents_onLaunchSpikeTraps(TrapType type)
+        {
+            _trapList.Where(s => s.TrapType.Equals(type)).ForEach(t => t.LaunchTrap());
+        }
     }
 }

@@ -11,24 +11,28 @@ namespace Vadimskyi.Game
     public abstract class CharacterModelBase
     {
         public int UserId { get; set; }
-        public float MaxHealth { get; set; }
-        public Vector3 Position { get; set; }
+        public float Damage { get; set; }
+        public int MaxHealth { get; set; }
+        public bool IsDead => CurrentHealth.Value <= 0;
+        public ReactiveProperty<Vector3> Position { get; set; }
         public Quaternion Rotation { get; set; }
 
         [JsonIgnore]
         public IWeapon Weapon { get; set; }
 
-        public ReactiveProperty<float> CurrentHealth { get; set; }
+        public ReactiveProperty<int> CurrentHealth { get; set; }
+        public ReactiveCommand<CharacterModelBase> OnReset;
 
         protected CharacterModelBase(
-            float maxHealth,
+            int maxHealth,
             Vector3 position,
             IWeapon weapon = null)
         {
             Weapon = weapon;
-            Position = position;
             MaxHealth = maxHealth;
-            CurrentHealth = new ReactiveProperty<float>(MaxHealth);
+            Position = new ReactiveProperty<Vector3>(position);
+            CurrentHealth = new ReactiveProperty<int>(MaxHealth);
+            OnReset = new ReactiveCommand<CharacterModelBase>();
         }
     }
 }

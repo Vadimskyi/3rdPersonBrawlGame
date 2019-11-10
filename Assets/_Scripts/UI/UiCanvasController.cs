@@ -13,23 +13,52 @@ public class UiCanvasController : MonoBehaviour
     private Button _playerRespawn;
 
     [SerializeField]
-    private HealthBarView _healthBar;
+    private HealthBarView _healthBarPrefab;
+
+    private HealthBarFactory _factory;
+    private Dictionary<int, HealthBarFacade> _userHealthbars;
 
     private void Start()
     {
-        _playerRespawn.OnClickAsObservable().Subscribe(_ => { PlayersController.Instance.RespawnPlayer(); }).AddTo(this);
-        _healthBar.Name.text = UserData.Instance.User.Name;
+        _factory = new HealthBarFactory();
+        _userHealthbars = new Dictionary<int, HealthBarFacade>();
+        _playerRespawn.OnClickAsObservable().Subscribe(_ =>
+        {
+            PlayersController.Instance.RespawnPlayer();
+        }).AddTo(this);
+        Initialize();
     }
 
-    public void PlayerHealthOnDamageTaken(int dmg)
+    private void Initialize()
     {
-        _healthBar.Health.fillAmount = (float) PlayersController.Instance.CurrentPlayer.Health.CurrentHealth /
-                                       PlayersController.Instance.CurrentPlayer.Health.MaxHealth;
+        CombatRoomData.Instance.Users?.ForEach(CreateUserHealthbar);
+        CombatRoomData.Instance.OnNewUserJoined += CreateUserHealthbar;
     }
 
-    public void OnPlayerMove(Transform target, Vector3 direction)
+    private void CreateUserHealthbar(User user)
     {
-        _healthBar.transform.localPosition = CanvasHelper.Instance.WorldToCanvasPoint(target.position);
-        _healthBar.transform.SetLocalPosition(null, 250);
+        var healthFacade = _factory.Create(user, transform);
+        _userHealthbars.Add(user.Id, healthFacade);
+        user.Character.Position.Subscribe(_ =>
+        {
+            UpdatePlayersPosition();
+            Observable.TimerFrame(2, FrameCountType.FixedUpdate).Subscribe(_2 => { UpdatePlayersPosition(); });
+        });
+        UpdatePlayersPosition();
+    }
+
+    //line up healthbar with player position
+    private void UpdatePlayersPosition()
+    {
+        foreach (var barFacade in _userHealthbars.Values)
+        {
+            barFacade.UpdatePosition(CanvasHelper.Instance.WorldToCanvasPoint(barFacade.User.Character.Position.Value));
+        }
+    }
+
+    public void TryCharacterKick()
+    {
+        PlayersController.Instance.CurrentPlayer?.Kick?.TryKick();
+        Debug.Log("Kick!");
     }
 }

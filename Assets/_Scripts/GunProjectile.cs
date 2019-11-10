@@ -10,6 +10,6 @@ public class GunProjectile : MonoBehaviour
     private void OnTriggerEnter(Collider collider)
     {
         OnHit?.Invoke(collider.gameObject);
-        Destroy(gameObject);
+        Destroy(transform.parent.gameObject);
     }
 }
