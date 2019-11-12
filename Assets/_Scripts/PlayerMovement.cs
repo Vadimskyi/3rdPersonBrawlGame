@@ -7,6 +7,7 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using Vadimskyi.Utils;
 
 namespace Vadimskyi.Game
 {
@@ -28,6 +29,7 @@ namespace Vadimskyi.Game
         private Animator _animator;
         private Transform transform;
         private Rigidbody _rigidbody;
+        private GameSettings _settings;
         private CharacterController _characterController;
 
         private Vector3 _prevMovementForce;
@@ -64,6 +66,7 @@ namespace Vadimskyi.Game
             _animator = animator;
             _rigidbody = rigidbody;
             _characterController = characterController;
+            _settings = Services.Get<GameSettings>();
 
             _blockMovement = false;
             _canSendNetworkMovement = true;
@@ -271,7 +274,7 @@ namespace Vadimskyi.Game
             _stumbleTask?.Dispose();
             _stumbleTask = Observable.Interval(TimeSpan.FromMilliseconds(10)).Subscribe(frameTime =>
             {
-                if (elapsedTime >= CompositionRoot.GlobalSettings.AnimationSetting.StumbleAnimationTime)
+                if (elapsedTime >= _settings.AnimationSetting.StumbleAnimationTime)
                 {
                     _stumbleTask?.Dispose();
                     BlockMovement(false);
@@ -279,7 +282,7 @@ namespace Vadimskyi.Game
                     return;
                 }
                 elapsedTime += 10;
-                _movementForce = direction * CompositionRoot.GlobalSettings.ArenaSettings.PushForce;
+                _movementForce = direction * _settings.ArenaSettings.PushForce;
             });
         }
 

@@ -14,9 +14,9 @@ namespace Vadimskyi.Game
         private DefaultGameRouter _router;
         private GameStateController _gameStateController;
 
-        public NetworkController(GameStateController gameStateController, GameSettings gameSettings)
+        public NetworkController(GameStateController gameStateController)
         {
-            _settings = gameSettings;
+            _settings = Services.Get<GameSettings>();
             _gameStateController = gameStateController;
             _gameStateController.OnStateChanged += OnStateChanged;
             OpenConnection();

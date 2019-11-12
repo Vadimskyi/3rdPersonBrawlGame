@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using Vadimskyi.Utils;
 
 namespace Vadimskyi.Game
 {
@@ -26,17 +27,15 @@ namespace Vadimskyi.Game
 
         private void InstallControllers()
         {
-            CompositionRoot.GlobalSettings = _gameSettings;
+            Services.RegisterService(_gameSettings);
             //Initialize Dependencies
             _gameStateFactory = new GameStateFactory();
             _gameStateController = new GameStateController(_gameStateFactory);
             _gameStateController.SetState(GameStateType.Enter);
-            _networkController = new NetworkController(_gameStateController, _gameSettings);
+            _networkController = new NetworkController(_gameStateController);
             
             //Start Game
             _gameController = new GameController(_gameLevelController, _gameStateController);
         }
-
-        public static GameSettings GlobalSettings { get; private set; }
     }
 }

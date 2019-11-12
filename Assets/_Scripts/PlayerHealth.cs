@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
+using Vadimskyi.Utils;
 
 namespace Vadimskyi.Game
 {
@@ -16,6 +17,7 @@ namespace Vadimskyi.Game
         private User _user;
         private Animator _animator;
         private GameObject gameObject;
+        private GameSettings _settings;
         private ParticleSystem _damageParticle;
 
         private int _currentHealth;
@@ -32,6 +34,7 @@ namespace Vadimskyi.Game
             _animator = animator;
             gameObject = target;
             _damageParticle = damageParticle;
+            _settings = Services.Get<GameSettings>();
             user.Character.OnReset.Subscribe(model =>
             {
                 _animator.SetBool("dead", false);
@@ -42,7 +45,7 @@ namespace Vadimskyi.Game
         {
             if (!_user.Character.IsDead
                 && gameObject.transform.position.y <
-                CompositionRoot.GlobalSettings.ArenaSettings.CharacterFallThreshold)
+                _settings.ArenaSettings.CharacterFallThreshold)
             {
                 NetworkEvents.CharacterTakeDamage(new UserTakeDamage
                 {

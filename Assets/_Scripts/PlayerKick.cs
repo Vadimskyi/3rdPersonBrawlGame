@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using Vadimskyi.Utils;
 
 namespace Vadimskyi.Game
 {
@@ -17,6 +18,7 @@ namespace Vadimskyi.Game
         private Transform _transform;
         private Collider _kickCollider;
         private Rigidbody _rigidbody;
+        private GameSettings _settings;
         private PlayerMovement _playerMovement;
         private IDisposable _triggerDetectionTask;
 
@@ -37,6 +39,7 @@ namespace Vadimskyi.Game
             _rigidbody = rigidbody;
             _kickCollider = kickCollider;
             _playerMovement = playerMovement;
+            _settings = Services.Get<GameSettings>();
             _kickCollider.enabled = false;
         }
 
@@ -66,7 +69,7 @@ namespace Vadimskyi.Game
 
         public async void TryKick()
         {
-            if (_timeFromLastKick < CompositionRoot.GlobalSettings.DefaultCharacterSettings.KickRate 
+            if (_timeFromLastKick < _settings.DefaultCharacterSettings.KickRate 
                 || !_playerMovement.CanMove) return;
             _timeFromLastKick = 0;
             OnKick?.Invoke();
@@ -79,7 +82,7 @@ namespace Vadimskyi.Game
         {
             _animator.SetBool("kick", true);
             await Observable.Timer(
-                TimeSpan.FromMilliseconds(CompositionRoot.GlobalSettings.AnimationSetting.KickAnimationTime));
+                TimeSpan.FromMilliseconds(_settings.AnimationSetting.KickAnimationTime));
             _animator.SetBool("kick", false);
         }
 

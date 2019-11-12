@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
+using Vadimskyi.Utils;
 
 namespace Vadimskyi.Game
 {
@@ -23,6 +24,7 @@ namespace Vadimskyi.Game
         private PlayerHealth _health;
         private PlayerMovement _movement;
         private PlayerShooting _shooting;
+        private GameSettings _settings;
 
         public PlayerFacade(
             User model,
@@ -33,6 +35,7 @@ namespace Vadimskyi.Game
             _view = view;
             _model = model;
             _view.Facade = this;
+            _settings = Services.Get<GameSettings>();
             _health = new PlayerHealth(model, _view.Animator, _view.gameObject, null);
             _movement = new PlayerMovement(model, _view.transform, _view.Animator, _view.Rigidbody, _view.Controller);
             _shooting = new PlayerShooting(model, _view.Animator, _view.FirePoint, _view.GunFireSource, _view.MuzzleParticle, pMover, pSpawner);
@@ -66,7 +69,7 @@ namespace Vadimskyi.Game
         public void PushEventReceived(UserPush data)
         {
             _view.Animator.SetBool("stumble", true);
-            Observable.Timer(TimeSpan.FromMilliseconds(CompositionRoot.GlobalSettings.AnimationSetting.StumbleAnimationTime)).Subscribe(_ => { _view.Animator.SetBool("stumble", false); });
+            Observable.Timer(TimeSpan.FromMilliseconds(_settings.AnimationSetting.StumbleAnimationTime)).Subscribe(_ => { _view.Animator.SetBool("stumble", false); });
             if (UserData.Instance.User.Id.Equals(data.TargetId))
                 _movement.Push(data.Direction);
         }

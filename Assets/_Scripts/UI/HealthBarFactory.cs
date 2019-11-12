@@ -12,7 +12,7 @@ namespace Vadimskyi.Game
 
         public HealthBarFactory()
         {
-            _pool = new MonoObjectPool<HealthBarView>(CompositionRoot.GlobalSettings.DefaultGuiSettings.HealthBarPrefab);
+            _pool = new MonoObjectPool<HealthBarView>(Services.Get<GameSettings>().DefaultGuiSettings.HealthBarPrefab);
         }
 
         public HealthBarFacade Create(User model, Transform baseTransform)
