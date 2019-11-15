@@ -25,6 +25,7 @@ namespace Vadimskyi.Game
             NetworkEvents.onCharacterHitByTrap += NetworkEvents_onCharacterHitByTrap;
             NetworkEvents.onCharacterPush += NetworkEvents_onCharacterPush;
             NetworkEvents.onCharacterKick += NetworkEvents_onCharacterKick;
+            NetworkEvents.onCharacterDash += NetworkEvents_onCharacterDash;
 
             _manager.Socket.On("user_data", OnGetUserData);
             _manager.Socket.On("combat_room_data", OnGetCombatRoomData);
@@ -36,11 +37,17 @@ namespace Vadimskyi.Game
             _manager.Socket.On("launch_traps", OnLaunchTraps);
             _manager.Socket.On("character_pushed", OnCharacterPushed);
             _manager.Socket.On("character_kick", OnCharacterKick);
+            _manager.Socket.On("character_dash", OnCharacterDash);
 
             _manager.Socket.On("new_user_joined", NewUserJoined);
             _manager.Socket.On("user_left_game", OnUserLeft);
 
             _manager.Socket.On("error", ErrorCallback);
+        }
+
+        private void NetworkEvents_onCharacterDash(int userId)
+        {
+            _manager.Socket.Emit("character_dash", userId);
         }
 
         private void NetworkEvents_onCharacterKick(int userId)
@@ -136,6 +143,11 @@ namespace Vadimskyi.Game
         private void OnCharacterKick(Socket socket, Packet packet, params object[] args)
         {
             GameEvents.CharacterKick(JsonConvert.DeserializeObject<int>(args[0].ToString()));
+        }
+
+        private void OnCharacterDash(Socket socket, Packet packet, params object[] args)
+        {
+            GameEvents.CharacterDash(JsonConvert.DeserializeObject<int>(args[0].ToString()));
         }
 
         private void OnLaunchTraps(Socket socket, Packet packet, params object[] args)

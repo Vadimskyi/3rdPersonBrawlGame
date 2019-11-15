@@ -14,6 +14,7 @@ namespace Vadimskyi.Game
         public static event Action<UserTakeDamage> onCharacterTakenDamage = delegate { };
         public static event Action<UserPush> onCharacterPushed = delegate { };
         public static event Action<int> onCharacterKick = delegate { };
+        public static event Action<int> onCharacterDash = delegate { };
         public static event Action<PlayerCharacterModel> onCharacterRespawned = delegate { };
 
         internal static void CharacterFiredGun(UserShot data)
@@ -54,6 +55,11 @@ namespace Vadimskyi.Game
         public static void CharacterKick(int userId)
         {
             onCharacterKick.Invoke(userId);
+        }
+
+        public static void CharacterDash(int userId)
+        {
+            onCharacterDash.Invoke(userId);
         }
     }
 }

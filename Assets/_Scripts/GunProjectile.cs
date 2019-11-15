@@ -9,6 +9,7 @@ public class GunProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
+        if(collider.gameObject.tag.Equals("LocalPlayer")) return;
         OnHit?.Invoke(collider.gameObject);
         Destroy(transform.parent.gameObject);
     }

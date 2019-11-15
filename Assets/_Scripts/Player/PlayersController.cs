@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using UniRx;
 using UnityEngine;
+using Vadimskyi.Utils;
 
 namespace Vadimskyi.Game
 {
@@ -20,6 +21,7 @@ namespace Vadimskyi.Game
         [SerializeField]
         private UiCanvasController _canvas;
 
+        private GameSettings _settings;
         private MoveProjectiles _moveProjectiles;
         private SpawnProjectiles _spawnProjectiles;
 
@@ -27,6 +29,7 @@ namespace Vadimskyi.Game
 
         private void Awake()
         {
+            _settings = Services.Get<GameSettings>();
             _moveProjectiles = GetComponent<MoveProjectiles>();
             _spawnProjectiles = GetComponent<SpawnProjectiles>();
             _activePlayers = new Dictionary<int, PlayerFacade>();
@@ -39,6 +42,7 @@ namespace Vadimskyi.Game
             GameEvents.onCharacterRespawned += GameEvents_onCharacterRespawned;
             GameEvents.onCharacterPushed += GameEvents_onCharacterPushed;
             GameEvents.onCharacterKick += GameEvents_onCharacterKick;
+            GameEvents.onCharacterDash += GameEvents_onCharacterDash;
         }
 
         public void RespawnPlayer()
@@ -60,6 +64,7 @@ namespace Vadimskyi.Game
                 _cameraToFolow.Follow = view.Animator.transform;
                 _cameraToFolow.LookAt = view.Animator.transform;
                 CurrentPlayer = player;
+                CurrentPlayer.View.gameObject.tag = _settings.ArenaSettings.LocalPlayerTag;
                 SubscribeToMainPlayer(player);
             }
             else
@@ -125,6 +130,10 @@ namespace Vadimskyi.Game
             {
                 NetworkEvents.CharacterKick(facade.User.Id);
             };
+            facade.Dash.OnDash += () =>
+            {
+                NetworkEvents.CharacterDash(facade.User.Id);
+            };
         }
 
         private void GameEvents_onCharacterFireGun(UserShot data)
@@ -161,6 +170,12 @@ namespace Vadimskyi.Game
         {
             if (!_activePlayers.ContainsKey(userId)) return;
             _activePlayers[userId].Kick.RemoteKick();
+        }
+
+        private void GameEvents_onCharacterDash(int userId)
+        {
+            if (!_activePlayers.ContainsKey(userId)) return;
+            _activePlayers[userId].Dash.RemoteDash();
         }
 
         private void GameEvents_onCharacterRespawned(PlayerCharacterModel data)

@@ -60,10 +60,10 @@ namespace Vadimskyi.Game
         private void ReadInput()
         {
 #if UNITY_EDITOR
-            if (Input.GetMouseButtonDown(1))
+            /*if (Input.GetMouseButtonDown(1))
             {
                 TryKick();
-            }
+            }*/
 #endif
         }
 

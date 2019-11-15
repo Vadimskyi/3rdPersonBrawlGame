@@ -59,6 +59,13 @@ public class UiCanvasController : MonoBehaviour
     public void TryCharacterKick()
     {
         PlayersController.Instance.CurrentPlayer?.Kick?.TryKick();
-        Debug.Log("Kick!");
+    }
+
+    public void TryCharacterDash()
+    {
+        var player = PlayersController.Instance.CurrentPlayer;
+        var dash = player.Dash;
+        dash.TryDash();
+        Debug.Log("Dash!");
     }
 }

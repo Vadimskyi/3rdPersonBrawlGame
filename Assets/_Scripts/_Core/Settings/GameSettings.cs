@@ -21,6 +21,7 @@ namespace Vadimskyi.Game
     {
         public float CharacterFallThreshold;
         public float PushForce;
+        public string LocalPlayerTag;
     }
 
     [Serializable]
@@ -28,6 +29,8 @@ namespace Vadimskyi.Game
     {
         public float KickAnimationTime;
         public float StumbleAnimationTime;
+        public float DashAnimationTime;
+        public float DashAnimationDistance;
     }
 
     [Serializable]
@@ -45,6 +48,7 @@ namespace Vadimskyi.Game
         public float TurnSpeed;
         public float FireRate;
         public float KickRate;
+        public float DashRate;
     }
 
     [Serializable]

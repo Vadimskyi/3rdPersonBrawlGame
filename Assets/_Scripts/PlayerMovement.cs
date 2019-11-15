@@ -267,6 +267,13 @@ namespace Vadimskyi.Game
             _stumbleTask?.Dispose();
         }
 
+        public async Task Dash()
+        {
+            _movementForce = transform.forward * _settings.AnimationSetting.DashAnimationDistance;
+            await Observable.Timer(TimeSpan.FromMilliseconds(_settings.AnimationSetting.DashAnimationTime));
+            _movementForce = Vector3.zero;
+        }
+
         public void Push(Vector3 direction)
         {
             BlockMovement(true);

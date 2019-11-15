@@ -16,9 +16,12 @@ MonoBehaviour:
   ArenaSettings:
     CharacterFallThreshold: 3
     PushForce: 0.7
+    LocalPlayerTag: LocalPlayer
   AnimationSetting:
     KickAnimationTime: 500
     StumbleAnimationTime: 250
+    DashAnimationTime: 300
+    DashAnimationDistance: 4
   NetworkSettings:
     UpdateSendRate: 10
   DefaultCharacterSettings:
@@ -28,6 +31,7 @@ MonoBehaviour:
     TurnSpeed: 0
     FireRate: 0
     KickRate: 1
+    DashRate: 2
   DefaultGuiSettings:
     HealthBarPrefab: {fileID: 7937774765528105983, guid: d83c8d1e445e346469c847cf16ad293e,
       type: 3}

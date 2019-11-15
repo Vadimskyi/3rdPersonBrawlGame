@@ -13,6 +13,7 @@ namespace Vadimskyi.Game
 
         public User User => _model;
         public PlayerKick Kick => _kick;
+        public PlayerDash Dash => _dash;
         public PlayerView View => _view;
         public PlayerHealth Health => _health;
         public PlayerMovement Movement => _movement;
@@ -20,6 +21,7 @@ namespace Vadimskyi.Game
 
         private User _model;
         private PlayerKick _kick;
+        private PlayerDash _dash;
         private PlayerView _view;
         private PlayerHealth _health;
         private PlayerMovement _movement;
@@ -40,6 +42,7 @@ namespace Vadimskyi.Game
             _movement = new PlayerMovement(model, _view.transform, _view.Animator, _view.Rigidbody, _view.Controller);
             _shooting = new PlayerShooting(model, _view.Animator, _view.FirePoint, _view.GunFireSource, _view.MuzzleParticle, pMover, pSpawner);
             _kick = new PlayerKick(model, _view.transform, _view.KickCollider, _view.Animator, _view.Rigidbody, _movement);
+            _dash = new PlayerDash(_model, _view.transform, _view.Animator, _movement);
         }
 
         public void CustomUpdate()
@@ -48,12 +51,14 @@ namespace Vadimskyi.Game
             _shooting.CustomUpdate();
             _health.CustomUpdate();
             _kick.CustomUpdate();
+            _dash.CustomUpdate();
         }
 
         public void CustomFixedUpdate()
         {
             _movement.CustomFixedUpdate();
             _kick.CustomFixedUpdate();
+            _dash.CustomFixedUpdate();
         }
 
         public void Initialize()
